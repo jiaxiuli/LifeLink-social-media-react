@@ -12,7 +12,7 @@ function App() {
             <Redirect to='/login'/>)} 
           />
           <Route path="/login" component={Login}/>
-          <Route path="/homepage" component={HomePage}/>
+          <Route path="/homepage/:id" component={HomePage}/>
       </div>
   );
 }
