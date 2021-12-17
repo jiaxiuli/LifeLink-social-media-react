@@ -5,8 +5,8 @@ class LoginService {
         return axios.post('/user_login', userinfo);
     }
 
-    checkLoginStatus() {
-        return axios.get('/check_login_status');
+    checkLoginStatus(id) {
+        return axios.get(`/check_login_status?id=${id}`);
     }
 }
 

@@ -27,13 +27,11 @@ const Login = () => {
  
     function onUserFormFinish(value) {
         LoginService.login(value).then((res) => {
-            console.log(res.data);
             if (res.data.data.loginSuccess) {
                 message.success('登陆成功');
                 history.push(`/homepage/${res.data.data.user.id}`);
             } else {
                 message.error('用户名或密码错误');
-                console.log('failed');
             }
         }, () => {
             message.warning('网络有误，请重试');

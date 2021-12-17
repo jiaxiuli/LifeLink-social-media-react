@@ -3,10 +3,10 @@ import { message } from 'antd';
 import { useHistory } from "react-router-dom";
 import loginService from '../../apis/loginService';
 
-const HomePage = () => {
+const HomePage = (props) => {
     const history = useHistory();
     useEffect(() => {
-        loginService.checkLoginStatus().then((res) => {
+        loginService.checkLoginStatus(props.match.params.id).then((res) => {
             if (!res.data.data.loginStatus) {
                 message.warning('登陆状态过期 请重新登陆');
                 history.push('/login');

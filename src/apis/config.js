@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-console.log(process.env.BASE_API);
 const service = axios.create({
     baseURL: 'http://localhost:3000/', // node环境的不同，对应不同的baseURL
     timeout: 5000, // 请求的超时时间
