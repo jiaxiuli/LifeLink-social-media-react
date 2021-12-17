@@ -18,6 +18,7 @@ module.exports = {
     'react'
   ],
   rules: {
-    'react/prop-types': 0
+    'react/prop-types': 0,
+    semi: ['error', 'always']
   }
-}
+};

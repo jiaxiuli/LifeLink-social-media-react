@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const service = axios.create({
   baseURL: 'http://localhost:3000/', // node环境的不同，对应不同的baseURL
@@ -8,6 +8,6 @@ const service = axios.create({
   // "Content-Type": "application/x-www-form-urlencoded"
   // },
   withCredentials: true // 允许携带cookie
-})
+});
 
-export default service
+export default service;

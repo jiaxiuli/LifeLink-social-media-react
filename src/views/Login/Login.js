@@ -1,41 +1,41 @@
-import LoginService from '../../apis/loginService'
-import { useHistory } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
-import { Form, Input, Checkbox, Button, message } from 'antd'
-import './Login.scss'
+import LoginService from '../../apis/loginService';
+import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Checkbox, Button, message } from 'antd';
+import './Login.scss';
 
 const Login = () => {
-  const [loginRole, setLoginRole] = useState('user')
-  const history = useHistory()
+  const [loginRole, setLoginRole] = useState('user');
+  const history = useHistory();
 
   useEffect(() => {
-    const container = document.querySelector('.login-block-container')
-    const btns = document.querySelectorAll('.login-panel-role-change-button')
+    const container = document.querySelector('.login-block-container');
+    const btns = document.querySelectorAll('.login-panel-role-change-button');
     if (container && btns.length) {
       if (loginRole === 'user') {
-        container.classList.remove('change-to-admin-login')
-        btns[0].classList.add('change-role-btn-active')
-        btns[1].classList.remove('change-role-btn-active')
+        container.classList.remove('change-to-admin-login');
+        btns[0].classList.add('change-role-btn-active');
+        btns[1].classList.remove('change-role-btn-active');
       }
       if (loginRole === 'admin') {
-        container.classList.add('change-to-admin-login')
-        btns[1].classList.add('change-role-btn-active')
-        btns[0].classList.remove('change-role-btn-active')
+        container.classList.add('change-to-admin-login');
+        btns[1].classList.add('change-role-btn-active');
+        btns[0].classList.remove('change-role-btn-active');
       }
     }
-  }, [loginRole])
+  }, [loginRole]);
 
   function onUserFormFinish (value) {
     LoginService.login(value).then((res) => {
       if (res.data.data.loginSuccess) {
-        message.success('登陆成功')
-        history.push(`/homepage/${res.data.data.user.id}`)
+        message.success('登陆成功');
+        history.push(`/homepage/${res.data.data.user.id}`);
       } else {
-        message.error('用户名或密码错误')
+        message.error('用户名或密码错误');
       }
     }, () => {
-      message.warning('网络有误，请重试')
-    })
+      message.warning('网络有误，请重试');
+    });
   }
 
   function onAdminFormFinish () {
@@ -43,10 +43,10 @@ const Login = () => {
   }
 
   function handleUserLogin () {
-    setLoginRole('user')
+    setLoginRole('user');
   }
   function handleAdminLogin () {
-    setLoginRole('admin')
+    setLoginRole('admin');
   }
   return (
         <>
@@ -149,7 +149,7 @@ const Login = () => {
                 </div>
             </div>
         </>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
