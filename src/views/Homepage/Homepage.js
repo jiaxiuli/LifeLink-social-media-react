@@ -1,21 +1,16 @@
-import React, { useEffect } from 'react';
-import { message } from 'antd';
-import { useHistory } from 'react-router-dom';
-import loginService from '../../apis/loginService';
+import React from 'react';
+import Header from '../../components/Header/header';
+import Navigator from '../../components/Navigator/Navigator';
+import './Homepage.scss';
 
 const HomePage = (props) => {
-  const history = useHistory();
-  useEffect(() => {
-    loginService.checkLoginStatus(props.match.params.id).then((res) => {
-      if (!res.data.data.loginStatus) {
-        message.warning('登陆状态过期 请重新登陆');
-        history.push('/login');
-      }
-    });
-  });
-
   return (
-        <div>this is homepage</div>
+        <>
+            <div className='homepage-main'>
+                <Header userId={props.match.params.id}></Header>
+                <Navigator></Navigator>
+            </div>
+        </>
   );
 };
 
