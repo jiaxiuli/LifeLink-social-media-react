@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { message } from 'antd';
 import {
-    studentInfoStore,
+    // studentInfoStore,
     userInfoStore
 } from '../../store/informationStore';
 import { useHistory } from 'react-router-dom';
 import loginService from '../../apis/loginService';
 import userService from '../../apis/userService';
-import studentService from '../../apis/studentService';
 import {
-    userInfoAction,
-    studentInfoAction
+    userInfoAction
 } from '../../actions/informationActions';
 import './header.scss';
 
 const Header = (props) => {
     const history = useHistory();
-    const [studentInfo, setStudentInfo] = useState(null);
+    const [userInfo, setUserInfo] = useState(null);
 
     useEffect(() => {
         const userId = props.userId;
@@ -36,32 +34,24 @@ const Header = (props) => {
         }).then((res) => {
             // 向redux存入user信息
             userInfoStore.dispatch(userInfoAction(res.data.data));
-            const studentId = res.data.data.student_id;
-            return new Promise((resolve, reject) => {
-                studentService.getStudentInfoById(studentId).then((res) => {
-                    if (res.data.code === 200) resolve(res);
-                    // eslint-disable-next-line prefer-promise-reject-errors
-                    else reject();
-                });
-            });
-        }).then((res) => {
-            // 向redux写入student信息
-            studentInfoStore.dispatch(studentInfoAction(res.data.data));
         }).catch(() => {
             history.push('/login');
         });
-        studentInfoStore.subscribe(() => {
-            const infoFromRedux = studentInfoStore.getState();
-            setStudentInfo(infoFromRedux);
+        const cancelSub = userInfoStore.subscribe(() => {
+            const infoFromRedux = userInfoStore.getState();
+            setUserInfo(infoFromRedux);
         });
+        return () => {
+            cancelSub();
+        };
     }, []);
 
     return (
         <div className='header-main-container'>
             <div style={{
-                display: studentInfo ? 'block' : 'none'
+                display: userInfo ? 'block' : 'none'
             }}>
-                Welcome, {studentInfo ? `${studentInfo.firstname} ${studentInfo.lastname}` : 'user'}
+                Welcome, {userInfo ? `${userInfo.firstname} ${userInfo.lastname}` : 'user'}
             </div>
         </div>
     );

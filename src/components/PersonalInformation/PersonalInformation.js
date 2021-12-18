@@ -1,6 +1,6 @@
 import React from 'react';
 import InformationItem from '../InformationItem/InformationItem';
-import { studentInfoStore } from '../../store/informationStore';
+import { userInfoStore } from '../../store/informationStore';
 import './PersonalInformation.scss';
 import { useEffect, useState } from 'react/cjs/react.development';
 
@@ -8,75 +8,70 @@ const PersonalInformation = () => {
     const [info, setInfo] = useState(null);
     const [dataList, setDataList] = useState([]);
     useEffect(() => {
-        studentInfoStore.subscribe(() => {
-            setInfo(studentInfoStore.getState());
+        const cancelSub = userInfoStore.subscribe(() => {
+            setInfo(userInfoStore.getState());
         });
+        return () => {
+            cancelSub();
+        };
     }, []);
     useEffect(() => {
         if (info) {
+            console.log(info);
             const basicInfo = [
                 {
                     key: 'title',
                     value: 'Basic Information'
-                },
-                {
+                }, {
+                    key: 'Username',
+                    value: info.username
+                }, {
+                    key: 'Slogan',
+                    value: info.slogan
+                }, {
                     key: 'First Name',
                     value: info.firstname
-                },
-                {
+                }, {
                     key: 'Last Name',
                     value: info.lastname
-                },
-                {
+                }, {
                     key: 'Gender',
-                    value: info.gender
-                },
-                {
+                    value: info.gender === 'm' ? 'Male' : 'Female'
+                }, {
                     key: 'Date of Birth',
                     value: info.date_of_birth
-                }
-            ];
-            const RecordInfo = [
-                {
-                    key: 'title',
-                    value: 'Record Information'
                 }, {
-                    key: 'Student No.',
-                    value: info.number
-                },
-                {
-                    key: 'Faculty',
-                    value: info.faculty
+                    key: 'Occupation',
+                    value: info.occupation
                 }, {
-                    key: 'Major',
-                    value: info.major
-                }, {
-                    key: 'Grade',
-                    value: info.grade
-                }, {
-                    key: 'Class',
-                    value: info.class
+                    key: 'Company',
+                    value: info.company
                 }
             ];
             const contectInfo = [
                 {
                     key: 'title',
                     value: 'Contect'
-                },
-                {
+                }, {
                     key: 'Phone',
                     value: info.phone
-                },
-                {
+                }, {
                     key: 'E-mail',
                     value: info.email
+                }, {
+                    key: 'Address',
+                    value: `${info.country}, ${info.province}, ${info.city}, ${info.address}`
                 }
             ];
-            setDataList([basicInfo, RecordInfo, contectInfo]);
+            setDataList([basicInfo, contectInfo]);
         }
     }, [info]);
     return (
         <div className='personal-information-container'>
+            <div className='personal-information-photo-container'>
+                <div className='photo'></div>
+                <div className='name'>{`${info ? info.firstname : ''} ${info ? info.lastname : ''}`}</div>
+            </div>
             {
                 dataList.length
                     ? dataList.map((item, index) => (
@@ -84,7 +79,6 @@ const PersonalInformation = () => {
                     ))
                     : null
             }
-
         </div>
     );
 };
