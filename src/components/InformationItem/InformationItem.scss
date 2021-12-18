@@ -1,0 +1,45 @@
+.InformationItem-container {
+    position: relative;
+    width: 45%;
+    height: fit-content;
+    padding: 15px 0px 15px 0px;
+    // border: 1px solid red;
+
+    .InformationItem-title {
+        position: relative;
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .InformationItem-content {
+        position: relative;
+        width: 100%;
+        height: fit-content;
+
+        .InformationItem-item {
+            position: relative;
+            box-sizing: border-box;
+            padding-left: 10%;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            width: 100%;
+            height: 30px;
+
+            .item-name {
+                position: relative;
+                height: 100%;
+                flex: 1;
+            }
+
+            .item-value {
+                position: relative;
+                height: 100%;
+                flex: 1;
+            }
+        }
+    }
+}

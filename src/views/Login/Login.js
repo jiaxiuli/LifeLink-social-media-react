@@ -5,50 +5,54 @@ import { Form, Input, Checkbox, Button, message } from 'antd';
 import './Login.scss';
 
 const Login = () => {
-  const [loginRole, setLoginRole] = useState('user');
-  const history = useHistory();
+    const [loginRole, setLoginRole] = useState('user');
+    const history = useHistory();
+    const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const container = document.querySelector('.login-block-container');
-    const btns = document.querySelectorAll('.login-panel-role-change-button');
-    if (container && btns.length) {
-      if (loginRole === 'user') {
-        container.classList.remove('change-to-admin-login');
-        btns[0].classList.add('change-role-btn-active');
-        btns[1].classList.remove('change-role-btn-active');
-      }
-      if (loginRole === 'admin') {
-        container.classList.add('change-to-admin-login');
-        btns[1].classList.add('change-role-btn-active');
-        btns[0].classList.remove('change-role-btn-active');
-      }
+    useEffect(() => {
+        const container = document.querySelector('.login-block-container');
+        const btns = document.querySelectorAll('.login-panel-role-change-button');
+        if (container && btns.length) {
+            if (loginRole === 'user') {
+                container.classList.remove('change-to-admin-login');
+                btns[0].classList.add('change-role-btn-active');
+                btns[1].classList.remove('change-role-btn-active');
+            }
+            if (loginRole === 'admin') {
+                container.classList.add('change-to-admin-login');
+                btns[1].classList.add('change-role-btn-active');
+                btns[0].classList.remove('change-role-btn-active');
+            }
+        }
+    }, [loginRole]);
+
+    function onUserFormFinish (value) {
+        setIsLoading(true);
+        LoginService.login(value).then((res) => {
+            setIsLoading(false);
+            if (res.data.data.loginSuccess) {
+                message.success('登陆成功');
+                history.push(`/homepage/${res.data.data.user.id}`);
+            } else {
+                message.error('用户名或密码错误');
+            }
+        }, () => {
+            setIsLoading(false);
+            message.warning('网络有误，请重试');
+        });
     }
-  }, [loginRole]);
 
-  function onUserFormFinish (value) {
-    LoginService.login(value).then((res) => {
-      if (res.data.data.loginSuccess) {
-        message.success('登陆成功');
-        history.push(`/homepage/${res.data.data.user.id}`);
-      } else {
-        message.error('用户名或密码错误');
-      }
-    }, () => {
-      message.warning('网络有误，请重试');
-    });
-  }
+    function onAdminFormFinish () {
 
-  function onAdminFormFinish () {
+    }
 
-  }
-
-  function handleUserLogin () {
-    setLoginRole('user');
-  }
-  function handleAdminLogin () {
-    setLoginRole('admin');
-  }
-  return (
+    function handleUserLogin () {
+        setLoginRole('user');
+    }
+    function handleAdminLogin () {
+        setLoginRole('admin');
+    }
+    return (
         <>
             <div className='body'></div>
             <div className='mask'></div>
@@ -68,7 +72,7 @@ const Login = () => {
                                 initialValues={{ remember: true }}
                                 onFinish={onUserFormFinish}
                                 autoComplete="off"
-                                >
+                            >
                                 <Form.Item
                                     label="用户名"
                                     name="username"
@@ -93,11 +97,12 @@ const Login = () => {
 
                                 <Form.Item>
                                     <Button type="primary" htmlType="submit"
-                                    style={{
-                                      position: 'relative',
-                                      left: '50%',
-                                      transform: 'translateX(-50%)'
-                                    }}>
+                                        loading={isLoading}
+                                        style={{
+                                            position: 'relative',
+                                            left: '50%',
+                                            transform: 'translateX(-50%)'
+                                        }}>
                                         登陆
                                     </Button>
                                 </Form.Item>
@@ -110,7 +115,7 @@ const Login = () => {
                                 initialValues={{ remember: true }}
                                 onFinish={onAdminFormFinish}
                                 autoComplete="off"
-                                >
+                            >
                                 <Form.Item
                                     label="管理员"
                                     name="username"
@@ -135,11 +140,12 @@ const Login = () => {
 
                                 <Form.Item>
                                     <Button type="primary" htmlType="submit"
-                                    style={{
-                                      position: 'relative',
-                                      left: '50%',
-                                      transform: 'translateX(-50%)'
-                                    }}>
+                                        loading={isLoading}
+                                        style={{
+                                            position: 'relative',
+                                            left: '50%',
+                                            transform: 'translateX(-50%)'
+                                        }}>
                                         登陆
                                     </Button>
                                 </Form.Item>
@@ -149,7 +155,7 @@ const Login = () => {
                 </div>
             </div>
         </>
-  );
+    );
 };
 
 export default Login;
