@@ -49,9 +49,11 @@ const Header = (props) => {
     return (
         <div className='header-main-container'>
             <div style={{
-                display: userInfo ? 'block' : 'none'
+                display: userInfo ? 'flex' : 'none',
+                alignItems: 'center'
             }}>
-                Welcome, {userInfo ? `${userInfo.firstname} ${userInfo.lastname}` : 'user'}
+                <div className='header-photo'></div>
+                <div className='header-welcome'>Welcome, {userInfo ? `${userInfo.firstname} ${userInfo.lastname}` : 'user'}</div>
             </div>
         </div>
     );
