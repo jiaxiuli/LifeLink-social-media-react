@@ -27,13 +27,29 @@
 
     .login-panel-header {
         position: relative;
-        font-size: 20px;
-        font-weight: 800;
-        text-align: center;
-        line-height: 80px;
         width: 80%;
         height: 80px;
+        overflow: hidden;
         border-bottom: 1px solid #b9b9b9;
+
+        .login-panel-header-container {
+            position: absolute;
+            width: fit-content;
+            transition: all .5s;
+            height: 100%;
+            font-size: 20px;
+            font-weight: 800;
+            text-align: center;
+            line-height: 80px;
+            display: flex;
+            flex-direction: row;
+
+            .login-panel-header-chose-item {
+                position: relative;
+                height: 80px;
+                width: 320px;
+            }
+        }
     }
 
     .login-panel-role-change {
@@ -50,7 +66,6 @@
             cursor: pointer;
             font-size: smaller;
             font-weight: 800;
-            line-height: 20px;
             text-align: center;
             width: 50%;
             height: 100%;
@@ -81,10 +96,14 @@
   
 }
 
-.change-to-admin-login {
+.change-to-register {
     transform: translateX(-50%);
 }
 .change-role-btn-active {
     background-color: #477eff;
     color: #ffffff;
+}
+.ant-form-item-explain-error {
+    font-size: 12px;
+    font-weight: lighter;
 }

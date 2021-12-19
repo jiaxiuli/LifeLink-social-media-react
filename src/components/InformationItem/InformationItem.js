@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'antd';
 import './InformationItem.scss';
 
 const InformationItem = (props) => {
@@ -12,7 +13,10 @@ const InformationItem = (props) => {
                             ? (
                                 <div className='InformationItem-item' key={index}>
                                     <div className='item-name'>{item.key}</div>
-                                    <div className='item-value'>{item.value}</div>
+                                    <div className='item-value'>{item.value ? item.value : '还没有填写~'}</div>
+                                    <div className='item-edit-btn'>
+                                        <Button size='small'>change</Button>
+                                    </div>
                                 </div>
                             )
                             : null;
