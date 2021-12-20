@@ -49,7 +49,27 @@ const Login = () => {
     }
 
     function onRegisterFormFinish () {
-
+        const conPwd = registerForm.getFieldValue('confirmPassword');
+        const email = registerForm.getFieldValue('email');
+        const password = registerForm.getFieldValue('password');
+        console.log(conPwd, password);
+        if (conPwd === password) {
+            RegisterService.newUserRegister({
+                email,
+                password
+            }).then((res) => {
+                if (res.data.code === 200) {
+                    message.success('注册成功 请登陆');
+                    setLoginOrRegister('login');
+                } else {
+                    message.error('出错了');
+                }
+            }, () => {
+                message.error('网络有误，请重试');
+            });
+        } else {
+            message.error('两次输入密码不一致');
+        }
     }
 
     function handleUserLogin () {
@@ -185,7 +205,6 @@ const Login = () => {
                                 name="basic"
                                 labelCol={{ span: 8 }}
                                 initialValues={{ remember: true }}
-                                onFinish={onRegisterFormFinish}
                                 autoComplete="off"
                             >
                                 <Form.Item
@@ -235,10 +254,10 @@ const Login = () => {
                                 >
                                     <Input.Password/>
                                 </Form.Item>
-
                                 <Form.Item>
                                     <Button type="primary" htmlType="submit"
                                         loading={isLoading}
+                                        onClick={onRegisterFormFinish}
                                         style={{
                                             position: 'relative',
                                             marginTop: '10px',

@@ -53,7 +53,11 @@ const Header = (props) => {
                 alignItems: 'center'
             }}>
                 <div className='header-photo'></div>
-                <div className='header-welcome'>Welcome, {userInfo ? `${userInfo.firstname} ${userInfo.lastname}` : 'user'}</div>
+                {
+                    userInfo.firstname && userInfo.lastname
+                        ? (<div className='header-welcome'>Welcome, {`${userInfo.firstname} ${userInfo.lastname}`}</div>)
+                        : (<div className='header-welcome'>Hello, welcome</div>)
+                }
             </div>
         </div>
     );

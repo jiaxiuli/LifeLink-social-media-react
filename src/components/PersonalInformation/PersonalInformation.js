@@ -17,7 +17,6 @@ const PersonalInformation = () => {
     }, []);
     useEffect(() => {
         if (info) {
-            console.log(typeof info.date_of_birth);
             const basicInfo = [
                 {
                     key: 'title',
@@ -38,7 +37,7 @@ const PersonalInformation = () => {
                     key: 'Gender',
                     value: info.gender === 'm'
                         ? 'Male'
-                        : 'Female'
+                        : info.gender
                 }, {
                     key: 'Date of Birth',
                     value: info.date_of_birth
