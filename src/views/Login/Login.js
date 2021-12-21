@@ -52,7 +52,6 @@ const Login = () => {
         const conPwd = registerForm.getFieldValue('confirmPassword');
         const email = registerForm.getFieldValue('email');
         const password = registerForm.getFieldValue('password');
-        console.log(conPwd, password);
         if (conPwd === password) {
             RegisterService.newUserRegister({
                 email,

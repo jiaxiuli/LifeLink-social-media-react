@@ -15,6 +15,18 @@ import './header.scss';
 const Header = (props) => {
     const history = useHistory();
     const [userInfo, setUserInfo] = useState(null);
+    const [proPhoto, setProPhoto] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdTIgJFIUTtvW7R0KJeoB8L5jMgc6ePh5zkH2eJODnNxtq3pDKWEcjPbAWulFIuGMlb8I&usqp=CAU');
+    useEffect(() => {
+        if (userInfo) {
+            userService.getProfilePhoto(userInfo.pic_id).then((res) => {
+                if (res.data.code === 200) {
+                    setProPhoto(res.data.data.pic);
+                }
+            }).catch(() => {
+                message.warning('获取用户头像失败');
+            });
+        }
+    }, [userInfo]);
 
     useEffect(() => {
         const userId = props.userId;
@@ -52,7 +64,9 @@ const Header = (props) => {
                 display: userInfo ? 'flex' : 'none',
                 alignItems: 'center'
             }}>
-                <div className='header-photo'></div>
+                <div className='header-photo' style={{
+                    backgroundImage: `url(${proPhoto})`
+                }}></div>
                 {
                     userInfo && userInfo.firstname && userInfo.lastname
                         ? (<div className='header-welcome'>Welcome, {`${userInfo.firstname} ${userInfo.lastname}`}</div>)

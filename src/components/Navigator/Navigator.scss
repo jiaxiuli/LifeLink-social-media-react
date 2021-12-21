@@ -3,6 +3,8 @@
     height: calc(100vh - 150px);
     width: 12%;
     min-width: 190px;
+    z-index: 10;
+    background: #ffffff;
 
     .Navigator-menu-container {
         position: relative;

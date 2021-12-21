@@ -8,7 +8,11 @@ import {
 } from '@ant-design/icons';
 import './Navigator.scss';
 
-const Navigator = () => {
+const Navigator = (props) => {
+    function handleKeysClicked (target) {
+        const index = parseInt(target.key);
+        props.handleMenuItemClicked(index);
+    }
     return (
         <div className='Navigator-main'>
             <div className='Navigator-menu-container'>
@@ -16,6 +20,7 @@ const Navigator = () => {
                     defaultSelectedKeys={['1']}
                     mode="inline"
                     theme="light"
+                    onSelect={handleKeysClicked}
                 >
                     <Menu.Item key="1" icon={<UserOutlined />}>
                         My Information
