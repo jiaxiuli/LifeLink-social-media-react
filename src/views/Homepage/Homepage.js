@@ -9,7 +9,6 @@ const HomePage = (props) => {
     const [selectedIndex, setSelectedIndex] = useState(1);
 
     function handleMenuItemClicked (index) {
-        console.log(index);
         setSelectedIndex(index);
     }
     return (

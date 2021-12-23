@@ -1,7 +1,7 @@
 import React from 'react';
 import InformationItem from '../InformationItem/InformationItem';
 import { userInfoStore } from '../../store/informationStore';
-import { Upload, message, Spin } from 'antd';
+import { Upload, message, Spin, Button } from 'antd';
 import {
     userInfoAction
 } from '../../actions/informationActions';
@@ -15,9 +15,18 @@ const PersonalInformation = () => {
     const [dataList, setDataList] = useState([]);
     const [photoBase64Str, setPhotoBase64Str] = useState('');
     const [isChangePhotoLoading, setIsChangePhotoLoading] = useState(false);
+    // eslint-disable-next-line no-unused-vars
+    const [compareInfo, setCompareInfo] = useState(null);
+
     useEffect(() => {
         const cancelSub = userInfoStore.subscribe(() => {
-            setInfo(userInfoStore.getState());
+            const obj = userInfoStore.getState();
+            setInfo({
+                ...obj
+            });
+            setCompareInfo({
+                ...obj
+            });
         });
         return () => {
             cancelSub();
@@ -28,51 +37,76 @@ const PersonalInformation = () => {
         if (info) {
             const basicInfo = [
                 {
-                    key: 'title',
+                    key: 'none',
+                    name: 'title',
                     value: 'Basic Information'
                 }, {
-                    key: 'Username',
+                    key: 'username',
+                    name: 'Username',
                     value: info.username
                 }, {
-                    key: 'Slogan',
+                    key: 'slogan',
+                    name: 'Slogan',
                     value: info.slogan
                 }, {
-                    key: 'First Name',
+                    key: 'firstname',
+                    name: 'First Name',
                     value: info.firstname
                 }, {
-                    key: 'Last Name',
+                    key: 'lastname',
+                    name: 'Last Name',
                     value: info.lastname
                 }, {
-                    key: 'Gender',
+                    key: 'gender',
+                    name: 'Gender',
                     value: info.gender === 'm'
                         ? 'Male'
                         : info.gender
                 }, {
-                    key: 'Date of Birth',
+                    key: 'date_of_birth',
+                    name: 'Date of Birth',
                     value: info.date_of_birth
                         ? info.date_of_birth.slice(0, 10)
                         : info.date_of_birth
                 }, {
-                    key: 'Occupation',
+                    key: 'occupation',
+                    name: 'Occupation',
                     value: info.occupation
                 }, {
-                    key: 'Company',
+                    key: 'company',
+                    name: 'Company',
                     value: info.company
                 }
             ];
             const contectInfo = [
                 {
-                    key: 'title',
+                    key: 'none',
+                    name: 'title',
                     value: 'Contect'
                 }, {
-                    key: 'Phone',
+                    key: 'phone',
+                    name: 'Phone',
                     value: info.phone
                 }, {
-                    key: 'E-mail',
+                    key: 'email',
+                    name: 'E-mail',
                     value: info.email
                 }, {
-                    key: 'Address',
-                    value: `${info.country}, ${info.province}, ${info.city}, ${info.address}`
+                    key: 'country',
+                    name: 'Country',
+                    value: info.country
+                }, {
+                    key: 'province',
+                    name: 'Province',
+                    value: info.province
+                }, {
+                    key: 'city',
+                    name: 'City',
+                    value: info.city
+                }, {
+                    key: 'address',
+                    name: 'Address',
+                    value: info.address
                 }
             ];
             setDataList([basicInfo, contectInfo]);
@@ -141,6 +175,46 @@ const PersonalInformation = () => {
         return false;
     }
 
+    function handleInfoChange (key, value) {
+        setCompareInfo((prev) => {
+            prev[key] = value;
+            return { ...prev };
+        });
+    }
+
+    function handleSubmitChangedInfo () {
+        const change = {};
+        Object.keys(info).forEach((item) => {
+            if (info[item] !== compareInfo[item]) {
+                change[item] = compareInfo[item];
+            }
+        });
+        if (Object.keys(change).length === 0) {
+            message.warning('没有数据更改');
+        } else {
+            userService.updateUserInfo(info.id, change).then((res) => {
+                if (res.data.code === 200) {
+                    return new Promise((resolve, reject) => {
+                        userService.getUserInfoById(info.id).then((res) => {
+                            if (res.data.code === 200) resolve(res);
+                            // eslint-disable-next-line prefer-promise-reject-errors
+                            else reject();
+                        });
+                    });
+                } else {
+                    message.warning('请刷新');
+                    throw new Error('更新失败');
+                }
+            }).then((res) => {
+                message.success('更新信息成功');
+                // 向redux存入user信息
+                userInfoStore.dispatch(userInfoAction(res.data.data));
+            }).catch(() => {
+                message.error('更新失败');
+            });
+        }
+    }
+
     return (
         <div className='personal-information-container'>
             <div className='personal-information-photo-container'>
@@ -169,10 +243,15 @@ const PersonalInformation = () => {
             {
                 dataList.length
                     ? dataList.map((item, index) => (
-                        <InformationItem info={item} key={index}></InformationItem>
+                        <InformationItem
+                            info={item}
+                            key={index}
+                            handleInfoChange={handleInfoChange}
+                        ></InformationItem>
                     ))
                     : null
             }
+            <Button className='confirm-edit-info-btn' onClick={handleSubmitChangedInfo}>确认修改</Button>
         </div>
     );
 };

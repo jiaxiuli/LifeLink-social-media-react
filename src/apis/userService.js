@@ -12,6 +12,10 @@ class UserService {
     getProfilePhoto (picId) {
         return axios.get(`/get_profile_photo?picId=${picId}`);
     }
+
+    updateUserInfo (userId, info) {
+        return axios.post('/update_user_info', { userId, info });
+    }
 }
 
 export default new UserService();
