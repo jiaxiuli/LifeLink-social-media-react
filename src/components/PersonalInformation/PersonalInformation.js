@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import InformationItem from '../InformationItem/InformationItem';
 import { userInfoStore } from '../../store/informationStore';
@@ -5,7 +6,7 @@ import { Upload, message, Spin, Button } from 'antd';
 import {
     userInfoAction
 } from '../../actions/informationActions';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import userService from '../../apis/userService';
 import './PersonalInformation.scss';
 import { useEffect, useState } from 'react/cjs/react.development';
@@ -15,8 +16,8 @@ const PersonalInformation = () => {
     const [dataList, setDataList] = useState([]);
     const [photoBase64Str, setPhotoBase64Str] = useState('');
     const [isChangePhotoLoading, setIsChangePhotoLoading] = useState(false);
-    // eslint-disable-next-line no-unused-vars
     const [compareInfo, setCompareInfo] = useState(null);
+    const [loginInfoLocked, setLoginInfoLocked] = useState(true);
 
     useEffect(() => {
         const cancelSub = userInfoStore.subscribe(() => {
@@ -215,6 +216,10 @@ const PersonalInformation = () => {
         }
     }
 
+    function toggleShowLoginInfo () {
+        setLoginInfoLocked((prev) => !prev);
+    }
+
     return (
         <div className='personal-information-container'>
             <div className='personal-information-photo-container'>
@@ -239,18 +244,71 @@ const PersonalInformation = () => {
                     </Upload>
                 </div>
                 <div className='name'>{`${info ? info.firstname : ''} ${info ? info.lastname : ''}`}</div>
+                <div className='account-info'>
+                    {
+                        loginInfoLocked
+                            ? (
+                                <div style={{
+                                    fontSize: 20,
+                                    color: '#d4d4d4'
+                                }}>
+                                    account information
+                                </div>
+                            )
+                            : (
+                                <>
+                                    <div className='login-info-item'>
+                                        <div className='login-info-item-name'>Login Email: </div>
+                                        <div className='login-info-item-value'>{info.email}</div>
+                                        <div className='login-info-item-button'>
+                                            <Button size='small' className='edit-login-info-button'>change</Button>
+                                        </div>
+                                    </div>
+                                    <div className='login-info-item'>
+                                        <div className='login-info-item-name'>Login Password: </div>
+                                        <div className='login-info-item-value'>{info.password}</div>
+                                        <div className='login-info-item-button'>
+                                            <Button size='small' className='edit-login-info-button'>change</Button>
+                                        </div>
+                                    </div>
+                                </>
+                            )
+                    }
+                    <div className='login-info-hidden'>
+                        <LockOutlined
+                            style={{
+                                fontSize: 20,
+                                display: loginInfoLocked ? 'block' : 'none'
+                            }}
+                            title='show'
+                            onClick={toggleShowLoginInfo}
+                        />
+                        <UnlockOutlined
+                            style={{
+                                fontSize: 20,
+                                display: loginInfoLocked ? 'none' : 'block'
+                            }}
+                            title='hidden'
+                            onClick={toggleShowLoginInfo}
+                        />
+                    </div>
+                </div>
             </div>
-            {
-                dataList.length
-                    ? dataList.map((item, index) => (
-                        <InformationItem
-                            info={item}
-                            key={index}
-                            handleInfoChange={handleInfoChange}
-                        ></InformationItem>
-                    ))
-                    : null
-            }
+            <div style={{
+                display: 'flex'
+            }}>
+                {
+                    dataList.length
+                        ? dataList.map((item, index) => (
+                            <InformationItem
+                                info={item}
+                                key={index}
+                                handleInfoChange={handleInfoChange}
+                            ></InformationItem>
+                        ))
+                        : null
+                }
+            </div>
             <Button className='confirm-edit-info-btn' onClick={handleSubmitChangedInfo}>确认修改</Button>
         </div>
     );

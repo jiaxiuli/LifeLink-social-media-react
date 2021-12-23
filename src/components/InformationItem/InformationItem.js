@@ -120,7 +120,12 @@ const InformationItem = (props) => {
                                                     </Button>
                                                 </>
                                                 )
-                                                : (<Button size='small' title='编辑' onClick={() => handleEditInfo(item)}>
+                                                : (<Button
+                                                    size='small'
+                                                    title='编辑'
+                                                    onClick={() => handleEditInfo(item)}
+                                                    disabled={item.key === 'email'}
+                                                >
                                                     <EditOutlined />
                                                 </Button>)
                                         }

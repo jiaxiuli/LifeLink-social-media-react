@@ -1,6 +1,6 @@
 .personal-information-container {
     position: relative;
-    width: 50%;
+    width: 100%;
     height: 100%;
 
     .personal-information-photo-container {
@@ -92,13 +92,75 @@
             font-size: 22px;
             font-weight: 800;
         }
+
+        .account-info {
+            position: relative;
+            width: 50%;
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            border-radius: 15px;
+            border: 2px dotted #d4d4d4;
+
+            .login-info-item {
+                position: relative;
+                display: flex;
+                width: 80%;
+                height: 40%;
+                font-weight: 600;
+
+                .login-info-item-name {
+                    flex: 1;
+                    font-size: 16px;
+                    box-sizing: border-box;
+                    color: #f5222d;
+                    display: flex;
+                    align-items: center;
+                    padding-right: 10px;
+                }
+
+                .login-info-item-value {
+                    flex: 1;
+                    font-size: 16px;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .login-info-item-button {
+                    flex: 1;
+
+                    .edit-login-info-button {
+                        position: relative;
+                        width: 50%;
+                        color: #ffffff;
+                        top: 50%;
+                        font-size: 12px;
+                        border-radius: 5px;
+                        border: 1px solid #ffffff;
+                        transform: translateY(-50%);
+                        background: #f5222d;
+                    }
+                }
+            }
+
+            .login-info-hidden {
+                position: absolute;
+                cursor: pointer;
+                top: 8%;
+                right: 3%;
+                width: 20px;
+                height: 20px;
+            }
+        }
     }
 
     .confirm-edit-info-btn {
         position: relative;
         left: 50%;
-        margin-bottom: 10px;
-        width: 50%;
+        width: 30%;
         border-radius: 20px;
         margin-top: 20px;
         transform: translateX(-50%);

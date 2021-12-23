@@ -69,7 +69,12 @@ const Header = (props) => {
                 }}></div>
                 {
                     userInfo && userInfo.firstname && userInfo.lastname
-                        ? (<div className='header-welcome'>Welcome, {`${userInfo.firstname} ${userInfo.lastname}`}</div>)
+                        ? (<div className='header-welcome'>
+                            <div className='header-welcome-text'>
+                                Welcome, {`${userInfo.firstname} ${userInfo.lastname}`}
+                            </div>
+                            <div className='header-welcome-slogan'>{`- "${userInfo.slogan}"`}</div>
+                        </div>)
                         : (<div className='header-welcome'>Hello, welcome</div>)
                 }
             </div>
