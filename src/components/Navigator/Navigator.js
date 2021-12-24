@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu } from 'antd';
 import {
     UserOutlined,
-    BookOutlined,
+    FormOutlined,
     DesktopOutlined,
     ContainerOutlined
 } from '@ant-design/icons';
@@ -25,8 +25,8 @@ const Navigator = (props) => {
                     <Menu.Item key="1" icon={<UserOutlined />}>
                         My Information
                     </Menu.Item>
-                    <Menu.Item key="2" icon={<BookOutlined />}>
-                        Option 1
+                    <Menu.Item key="2" icon={<FormOutlined />}>
+                        Post Something
                     </Menu.Item>
                     <Menu.Item key="3" icon={<DesktopOutlined />}>
                         Option 2

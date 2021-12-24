@@ -1,5 +1,6 @@
-/* eslint-disable no-debugger */
+/* eslint-disable no-unused-vars */
 import React from 'react';
+import QueueAnim from 'rc-queue-anim';
 import { Button, Input } from 'antd';
 import { EditOutlined, UndoOutlined, CheckOutlined } from '@ant-design/icons';
 import './InformationItem.scss';
@@ -8,8 +9,7 @@ import { useEffect, useState } from 'react/cjs/react.development';
 const InformationItem = (props) => {
     const [editItemName, setEditItemName] = useState([]);
     const [info, setInfo] = useState([]);
-    // const { Option } = Select;
-
+    let isUnmount = false;
     useEffect(() => {
         if (props.info) {
             const temp = [];
@@ -18,8 +18,13 @@ const InformationItem = (props) => {
                     ...item
                 });
             });
-            setInfo(temp);
+            if (!isUnmount) {
+                setInfo(temp);
+            }
         }
+        return () => {
+            isUnmount = true;
+        };
     }, [props.info]);
 
     function handleEditInfo (item, index) {
@@ -61,82 +66,88 @@ const InformationItem = (props) => {
     return (
         <div className='InformationItem-container'>
             <div className='InformationItem-title'>{info.length ? info[0].value : props.info[0].value}</div>
+
             <div className='InformationItem-content'>
-                {
-                    info.map((item, index) => {
-                        return index
-                            ? (
-                                <div className='InformationItem-item' key={index}>
-                                    <span className='changed-notifi-point' style={{
-                                        display: info[index].value === props.info[index].value ? 'none' : 'block'
-                                    }} title='该项已变更 但未提交'></span>
-                                    <div className='item-name'>{item.name}</div>
-                                    <div className='item-value'>
-                                        {
-                                            item.key === 'gender'
-                                                ? (<select
-                                                    id={item.key}
-                                                    className='edit-item-gender-select'
-                                                    style={{
-                                                        display: editItemName.indexOf(item.name) > -1 ? 'block' : 'none'
-                                                    }}>
-                                                    <option key='m' value='Male'>Male</option>
-                                                    <option key='f' value='Female'>Female</option>
-                                                </select>)
-                                                : (<Input
-                                                    id={item.key}
-                                                    placeholder={item.value}
-                                                    bordered={false}
-                                                    style={{
-                                                        display: editItemName.indexOf(item.name) > -1 ? 'block' : 'none'
-                                                    }}
-                                                    className='edit-item'/>)
-                                        }
-                                        <span style={{
-                                            display: editItemName.indexOf(item.name) > -1 ? 'none' : 'block'
-                                        }}>
-                                            {item.value ? item.value : '还没有填写~'}
-                                        </span>
-                                    </div>
-                                    <div className='item-edit-btn'>
-
-                                        {
-                                            editItemName.indexOf(item.name) > -1
-                                                ? (<>
-                                                    <Button
-                                                        size='small'
-                                                        title='确定'
-                                                        onClick={() => handleEditInfoCompelte(item, index)}>
-                                                        <CheckOutlined />
-                                                    </Button>
-                                                    <Button
-                                                        size='small'
-                                                        title='取消'
+                <QueueAnim interval={100} animConfig={[
+                    { opacity: [1, 0], translateX: [0, 50] }
+                ]}>
+                    {
+                        info.map((item, index) => {
+                            return index
+                                ? (
+                                    <div className='InformationItem-item' key={index}>
+                                        <span className='changed-notifi-point' style={{
+                                            display: info[index].value === props.info[index].value ? 'none' : 'block'
+                                        }} title='该项已变更 但未提交'></span>
+                                        <div className='item-name'>{item.name}</div>
+                                        <div className='item-value'>
+                                            {
+                                                item.key === 'gender'
+                                                    ? (<select
+                                                        id={item.key}
+                                                        className='edit-item-gender-select'
                                                         style={{
-                                                            marginLeft: '5px'
+                                                            display: editItemName.indexOf(item.name) > -1 ? 'block' : 'none'
+                                                        }}>
+                                                        <option key='m' value='Male'>Male</option>
+                                                        <option key='f' value='Female'>Female</option>
+                                                    </select>)
+                                                    : (<Input
+                                                        id={item.key}
+                                                        placeholder={item.value}
+                                                        bordered={false}
+                                                        style={{
+                                                            display: editItemName.indexOf(item.name) > -1 ? 'block' : 'none'
                                                         }}
-                                                        onClick={() => handleEditInfo(item, index)}>
-                                                        <UndoOutlined />
-                                                    </Button>
-                                                </>
-                                                )
-                                                : (<Button
-                                                    size='small'
-                                                    title='编辑'
-                                                    onClick={() => handleEditInfo(item)}
-                                                    disabled={item.key === 'email'}
-                                                >
-                                                    <EditOutlined />
-                                                </Button>)
-                                        }
+                                                        className='edit-item'/>)
+                                            }
+                                            <span style={{
+                                                display: editItemName.indexOf(item.name) > -1 ? 'none' : 'block'
+                                            }}>
+                                                {item.value ? item.value : '还没有填写~'}
+                                            </span>
+                                        </div>
+                                        <div className='item-edit-btn'>
 
+                                            {
+                                                editItemName.indexOf(item.name) > -1
+                                                    ? (<>
+                                                        <Button
+                                                            size='small'
+                                                            title='确定'
+                                                            onClick={() => handleEditInfoCompelte(item, index)}>
+                                                            <CheckOutlined />
+                                                        </Button>
+                                                        <Button
+                                                            size='small'
+                                                            title='取消'
+                                                            style={{
+                                                                marginLeft: '5px'
+                                                            }}
+                                                            onClick={() => handleEditInfo(item, index)}>
+                                                            <UndoOutlined />
+                                                        </Button>
+                                                    </>
+                                                    )
+                                                    : (<Button
+                                                        size='small'
+                                                        title='编辑'
+                                                        onClick={() => handleEditInfo(item)}
+                                                        disabled={item.key === 'email'}
+                                                    >
+                                                        <EditOutlined />
+                                                    </Button>)
+                                            }
+
+                                        </div>
                                     </div>
-                                </div>
-                            )
-                            : null;
-                    })
-                }
+                                )
+                                : null;
+                        })
+                    }
+                </QueueAnim>
             </div>
+
         </div>
     );
 };

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import InformationItem from '../InformationItem/InformationItem';
 import { userInfoStore } from '../../store/informationStore';
@@ -19,18 +18,25 @@ const PersonalInformation = () => {
     const [compareInfo, setCompareInfo] = useState(null);
     const [loginInfoLocked, setLoginInfoLocked] = useState(true);
 
+    function initPageData () {
+        const obj = userInfoStore.getState();
+        setInfo(() => {
+            return { ...obj };
+        });
+        setCompareInfo(() => {
+            return { ...obj };
+        });
+    }
+
     useEffect(() => {
+        initPageData();
         const cancelSub = userInfoStore.subscribe(() => {
-            const obj = userInfoStore.getState();
-            setInfo({
-                ...obj
-            });
-            setCompareInfo({
-                ...obj
-            });
+            initPageData();
         });
         return () => {
             cancelSub();
+            setInfo(() => null);
+            setCompareInfo(() => null);
         };
     }, []);
 
