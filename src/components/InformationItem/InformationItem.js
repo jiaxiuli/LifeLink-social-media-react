@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react/cjs/react.development';
 const InformationItem = (props) => {
     const [editItemName, setEditItemName] = useState([]);
     const [info, setInfo] = useState([]);
-    let isUnmount = false;
     useEffect(() => {
         if (props.info) {
             const temp = [];
@@ -18,14 +17,9 @@ const InformationItem = (props) => {
                     ...item
                 });
             });
-            if (!isUnmount) {
-                setInfo(temp);
-            }
+            setInfo(() => temp);
         }
-        return () => {
-            isUnmount = true;
-        };
-    }, [props.info]);
+    }, []);
 
     function handleEditInfo (item, index) {
         if (index) {
@@ -68,7 +62,7 @@ const InformationItem = (props) => {
             <div className='InformationItem-title'>{info.length ? info[0].value : props.info[0].value}</div>
 
             <div className='InformationItem-content'>
-                <QueueAnim interval={100} animConfig={[
+                <QueueAnim interval={0} animConfig={[
                     { opacity: [1, 0], translateX: [0, 50] }
                 ]}>
                     {

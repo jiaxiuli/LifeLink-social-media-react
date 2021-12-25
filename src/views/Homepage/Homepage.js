@@ -5,7 +5,6 @@ import {
     useHistory,
     Redirect
 } from 'react-router-dom';
-import QueueAnim from 'rc-queue-anim';
 import Header from '../../components/Header/header';
 import Navigator from '../../components/Navigator/Navigator';
 import PersonalInformation from '../../components/PersonalInformation/PersonalInformation';
@@ -30,28 +29,24 @@ const HomePage = (props) => {
                 <div className='homepage-main'>
                     <Navigator handleMenuItemClicked={handleMenuItemClicked}></Navigator>
                     <div className='homepage-main-content-right'>
-                        {
-                            <QueueAnim className='homepage-main-content-right-scroller' interval={1000}>
-                                <Route path={path} exact render={() => (
-                                    <Redirect to={`${url}/Personal-Information`}/>)}
-                                />
+                        <Route path={path} exact render={() => (
+                            <Redirect to={`${url}/Personal-Information`}/>)}
+                        />
 
-                                <Route path={`${path}/Personal-Information`}>
-                                    <div className='homepage-contentContainer'>
-                                        <div className='homepage-content'>
-                                            <div className='homepage-content-header'>Personal Information</div>
-                                            <div className='homepage-content-component'>
-                                                <PersonalInformation></PersonalInformation>
-                                            </div>
-                                        </div>
+                        <Route path={`${path}/Personal-Information`}>
+                            <div className='homepage-contentContainer'>
+                                <div className='homepage-content'>
+                                    <div className='homepage-content-header'>Personal Information</div>
+                                    <div className='homepage-content-component'>
+                                        <PersonalInformation></PersonalInformation>
                                     </div>
-                                </Route>
+                                </div>
+                            </div>
+                        </Route>
 
-                                <Route path={`${path}/Post-Something`}>
-                                    <div className='homepage-contentContainer'>123123</div>
-                                </Route>
-                            </QueueAnim>
-                        }
+                        <Route path={`${path}/Post-Something`}>
+                            <div className='homepage-contentContainer'>123123</div>
+                        </Route>
                     </div>
                 </div>
             </div>
