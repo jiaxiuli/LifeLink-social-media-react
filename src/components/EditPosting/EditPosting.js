@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import $ from 'jquery';
+import { userInfoStore } from '../../store/informationStore';
 import articleService from '../../apis/articleService';
 import { Input, Button, Form, Select, message, Upload, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -12,7 +12,9 @@ const EditPosting = () => {
     const { Search } = Input;
     const [form] = Form.useForm();
     const inputRef = React.useRef(null);
+    const [info, setInfo] = useState(null);
     const [catagory, setCatagory] = useState([]);
+    const [isSubmitBtnLoading, setIsSubmitBtnLoading] = useState(false);
     const [picState, setPicState] = useState({
         previewVisible: false,
         previewImage: '',
@@ -25,6 +27,23 @@ const EditPosting = () => {
             <div style={{ marginTop: 8 }}>上传图片</div>
         </div>
     );
+    // 获取用户信息
+    useEffect(() => {
+        const obj = userInfoStore.getState();
+        setInfo(() => {
+            return { ...obj };
+        });
+        const cancelSub = userInfoStore.subscribe(() => {
+            const obj = userInfoStore.getState();
+            setInfo(() => {
+                return { ...obj };
+            });
+        });
+        return () => {
+            cancelSub();
+            setInfo(() => null);
+        };
+    }, []);
     useEffect(() => {
         articleService.getAllCatagory().then((res) => {
             if (res.data.code === 200) {
@@ -88,19 +107,57 @@ const EditPosting = () => {
     }
 
     function handleSendPosting () {
+        setIsSubmitBtnLoading(true);
+        const mentionsList = [2, 3, 4];
         const catagory = form.getFieldValue('catagory');
-        // 验证分类是否填写 填写之后所有信息才能提交
-        form.validateFields(['catagory']).then(() => {
-            const tags = [];
-            const tagList = $('.tag-text');
-            for (let item of tagList) {
-                tags.push($(item).html());
-            }
-            console.log(tags);
-            console.log(catagory);
-        }, () => {
-            message.warning('未填写分类 无法提交');
-        });
+        const title = $('.edit-Area-input-title').val();
+        const content = $('.edit-Area-input-text').text();
+        if (title && content) {
+            // 验证分类是否填写 填写之后所有信息才能提交
+            form.validateFields(['catagory']).then(() => {
+                const tags = [];
+                const tagList = $('.tag-text');
+                for (let item of tagList) {
+                    tags.push($(item).html());
+                }
+                // 照片
+                const picListStr = JSON.stringify(picState.fileList);
+                // 标签
+                const tagListStr = JSON.stringify(tags);
+                // 分类 catagory
+                // 提到
+                const mentionsListStr = JSON.stringify(mentionsList);
+                // 屏蔽
+                const shieldsListStr = JSON.stringify([]);
+                const request = {
+                    author: info.id,
+                    title,
+                    content,
+                    catagory,
+                    tags: tagListStr,
+                    pictures: picListStr,
+                    mentions: mentionsListStr,
+                    shields: shieldsListStr
+                };
+                articleService.postAnArticle(request).then((res) => {
+                    if (res.data.code === 200) {
+                        message.success('发布成功');
+                    } else {
+                        message.error('发布失败 请重试');
+                    }
+                    setIsSubmitBtnLoading(false);
+                }, () => {
+                    message.error('发布失败 请重试');
+                    setIsSubmitBtnLoading(false);
+                });
+            }, () => {
+                message.warning('未填写分类 无法提交');
+                setIsSubmitBtnLoading(false);
+            });
+        } else {
+            message.warning('文章不完整 无法提交');
+            setIsSubmitBtnLoading(false);
+        }
     }
 
     function checkIsCatagoryOk () {
@@ -120,7 +177,6 @@ const EditPosting = () => {
         }
     }
 
-    /// /////////////////////////////////////////////////////////////////////
     function handleCancel () {
         setPicState((prev) => {
             prev.previewVisible = false;
@@ -227,20 +283,24 @@ const EditPosting = () => {
                     <Button
                         className='post-button-btn'
                         onClick={handleSendPosting}
+                        loading={isSubmitBtnLoading}
                     >
-                            Post
+                            确认发布
                     </Button>
                 </div>
             </div>
             <div className='photo-area'>
                 <Upload
+                    style={{
+                        border: '1px solid black'
+                    }}
                     beforeUpload={handleBeforeUpload}
                     listType="picture-card"
                     fileList={picState.fileList}
                     onPreview={handlePreview}
                     onChange={handleChange}
                 >
-                    {picState.fileList.length >= 20 ? null : uploadButton}
+                    {picState.fileList.length >= 15 ? null : uploadButton}
                 </Upload>
                 <Modal
                     visible={picState.previewVisible}

@@ -10,6 +10,7 @@
         height: 100%;
         box-sizing: border-box;
         padding: 2%;
+        overflow: auto;
 
         .attribute-name {
             font-size: 16px;
@@ -110,6 +111,7 @@
                 border-radius: 10px;
                 top: 50%;
                 left: 50%;
+                font-weight: 600;
                 transform: translate(-50%, -50%);
             }
         }
@@ -117,6 +119,7 @@
 
     .photo-area {
         box-sizing: border-box;
+        overflow: auto;
         padding: 2%;
         height: 100%;
         flex: 2;
@@ -138,19 +141,43 @@
     /*滚动条里面轨道*/
     border-radius: 10px;
 }
-
+.ant-input::-webkit-scrollbar,
+.attribute-area::-webkit-scrollbar,
+.photo-area::-webkit-scrollbar,
 .tagsContainer::-webkit-scrollbar {
     /*滚动条整体样式*/
     width: 5px; /*高宽分别对应横竖滚动条的尺寸*/
     height: 1px;
 }
+.ant-input::-webkit-scrollbar-thumb,
+.attribute-area::-webkit-scrollbar-thumb,
+.photo-area::-webkit-scrollbar-thumb,
 .tagsContainer::-webkit-scrollbar-thumb {
     /*滚动条里面小方块*/
     border-radius: 10px;
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
     background: #5e5e5e36;
 }
+.ant-input::-webkit-scrollbar-track,
+.attribute-area::-webkit-scrollbar-track,
+.photo-area::-webkit-scrollbar-track,
 .tagsContainer::-webkit-scrollbar-track {
     /*滚动条里面轨道*/
     border-radius: 10px;
+}
+.ant-upload-list-picture-card {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-content: flex-start;
+    flex-flow: row wrap;
+    .ant-upload-list-picture-card-container {
+        flex: 0 0 25%;
+        margin-bottom: 20px;
+    }
+}
+
+.ant-upload-list-item-info::before {
+    top: 0;
+    left: 0;
 }

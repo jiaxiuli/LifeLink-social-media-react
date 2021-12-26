@@ -31,7 +31,7 @@ const Navigator = (props) => {
                         My Information
                     </Menu.Item>
                     <Menu.Item key='2' icon={<FormOutlined />}>
-                        Post Something
+                        Write a Posting
                     </Menu.Item>
                     <Menu.Item key='3' icon={<DesktopOutlined />}>
                         Option 2

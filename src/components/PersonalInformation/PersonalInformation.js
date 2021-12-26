@@ -154,8 +154,10 @@ const PersonalInformation = () => {
             userService.getProfilePhoto(info.pic_id).then((res) => {
                 const pic = res.data.data.pic || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdTIgJFIUTtvW7R0KJeoB8L5jMgc6ePh5zkH2eJODnNxtq3pDKWEcjPbAWulFIuGMlb8I&usqp=CAU';
                 const photoContainer = document.querySelector('.photo');
-                photoContainer.style.backgroundImage = `url(${pic})`;
-                setIsChangePhotoLoading(false);
+                if (photoContainer) {
+                    photoContainer.style.backgroundImage = `url(${pic})`;
+                    setIsChangePhotoLoading(false);
+                }
             });
         }
     }
@@ -227,7 +229,9 @@ const PersonalInformation = () => {
     }
 
     return (
-        <div className='personal-information-container'>
+        <div className='personal-information-container' style={{
+            display: info ? 'block' : 'none'
+        }}>
             <div className='personal-information-photo-container'>
                 <div className='photo' >
                     <Spin style={{
