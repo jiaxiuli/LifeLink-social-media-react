@@ -19,7 +19,7 @@ const InformationItem = (props) => {
             });
             setInfo(() => temp);
         }
-    }, []);
+    }, [props.info]);
 
     function handleEditInfo (item, index) {
         if (index) {

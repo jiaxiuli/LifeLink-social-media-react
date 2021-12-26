@@ -8,6 +8,7 @@ import {
 import Header from '../../components/Header/header';
 import Navigator from '../../components/Navigator/Navigator';
 import PersonalInformation from '../../components/PersonalInformation/PersonalInformation';
+import EditPosting from '../../components/EditPosting/EditPosting';
 import './Homepage.scss';
 
 const HomePage = (props) => {
@@ -45,7 +46,9 @@ const HomePage = (props) => {
                         </Route>
 
                         <Route path={`${path}/Post-Something`}>
-                            <div className='homepage-contentContainer'>123123</div>
+                            <div className='homepage-contentContainer'>
+                                <EditPosting></EditPosting>
+                            </div>
                         </Route>
                     </div>
                 </div>
