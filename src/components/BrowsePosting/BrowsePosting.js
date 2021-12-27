@@ -30,8 +30,11 @@ const BrowsePosting = () => {
     useEffect(() => {
         // 获取关注列表
         if (info) {
-            const followListStr = info.follow;
+            let followListStr = info.follow;
             if (followListStr) {
+                let followList = JSON.parse(followListStr);
+                followList.unshift(info.id);
+                followListStr = JSON.stringify(followList);
                 articleService.getArticlesFromUserList(followListStr).then((res) => {
                     console.log(res);
                 }, (res) => {
