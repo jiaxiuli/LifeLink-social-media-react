@@ -3,7 +3,7 @@ import { Menu } from 'antd';
 import {
     UserOutlined,
     FormOutlined,
-    DesktopOutlined,
+    CopyOutlined,
     ContainerOutlined
 } from '@ant-design/icons';
 import './Navigator.scss';
@@ -31,10 +31,10 @@ const Navigator = (props) => {
                         My Information
                     </Menu.Item>
                     <Menu.Item key='2' icon={<FormOutlined />}>
-                        Write a Posting
+                        Write an Article
                     </Menu.Item>
-                    <Menu.Item key='3' icon={<DesktopOutlined />}>
-                        Option 2
+                    <Menu.Item key='3' icon={<CopyOutlined />}>
+                        Browse Articles
                     </Menu.Item>
                     <Menu.Item key='4' icon={<ContainerOutlined />}>
                         Option 3

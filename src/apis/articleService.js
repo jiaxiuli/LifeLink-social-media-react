@@ -8,6 +8,10 @@ class ArticleService {
     postAnArticle (article) {
         return axios.post('/post_an_article', { article });
     }
+
+    getArticlesFromUserList (userList) {
+        return axios.post('/get_articles_from_userList', { userList });
+    }
 }
 
 export default new ArticleService();

@@ -9,6 +9,7 @@ import Header from '../../components/Header/header';
 import Navigator from '../../components/Navigator/Navigator';
 import PersonalInformation from '../../components/PersonalInformation/PersonalInformation';
 import EditPosting from '../../components/EditPosting/EditPosting';
+import BrowsePosting from '../../components/BrowsePosting/BrowsePosting';
 import './Homepage.scss';
 
 const HomePage = (props) => {
@@ -20,7 +21,10 @@ const HomePage = (props) => {
             history.push(`${url}/Personal-Information`);
         }
         if (index === 2) {
-            history.push(`${url}/Post-Something`);
+            history.push(`${url}/Write-Article`);
+        }
+        if (index === 3) {
+            history.push(`${url}/Articles`);
         }
     }
     return (
@@ -45,9 +49,15 @@ const HomePage = (props) => {
                             </div>
                         </Route>
 
-                        <Route path={`${path}/Post-Something`}>
+                        <Route path={`${path}/Write-Article`}>
                             <div className='homepage-contentContainer'>
                                 <EditPosting></EditPosting>
+                            </div>
+                        </Route>
+
+                        <Route path={`${path}/Articles`}>
+                            <div className='homepage-contentContainer'>
+                                <BrowsePosting></BrowsePosting>
                             </div>
                         </Route>
                     </div>
