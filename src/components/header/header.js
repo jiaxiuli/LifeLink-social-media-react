@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { message } from 'antd';
 import {
-    // studentInfoStore,
+    followedUserInfoStore,
     userInfoStore
 } from '../../store/informationStore';
 import { useHistory } from 'react-router-dom';
@@ -33,7 +33,7 @@ const Header = (props) => {
         loginService.checkLoginStatus(userId).then((res) => {
             if (!res.data.data.loginStatus) {
                 message.warning('登陆状态过期 请重新登陆');
-                throw new Error('user is not logined');
+                throw new Error('not logined');
             } else {
                 return new Promise((resolve, reject) => {
                     userService.getUserInfoById(userId).then((res) => {
@@ -44,8 +44,31 @@ const Header = (props) => {
                 });
             }
         }).then((res) => {
+            const userInfo = res.data.data;
             // 向redux存入user信息
-            userInfoStore.dispatch(userInfoAction(res.data.data));
+            userInfoStore.dispatch(userInfoAction(userInfo));
+            return new Promise((resolve, reject) => {
+                userService.getFollowedUserInfo(userInfo.follow).then((res) => {
+                    if (res.data.code === 200) resolve(res);
+                    // eslint-disable-next-line prefer-promise-reject-errors
+                    else reject();
+                });
+            });
+        }, (err) => {
+            if (err.message === 'not logined') {
+                throw new Error('not logined');
+            } else {
+                message.error('获取用户信息失败');
+            }
+        }).then((res) => {
+            // 向redux存入关注列表信息
+            followedUserInfoStore.dispatch(userInfoAction(res.data.data));
+        }, (err) => {
+            if (err.message === 'not logined') {
+                throw new Error('not logined');
+            } else {
+                message.error('获取关注列表失败');
+            }
         }).catch(() => {
             history.push('/login');
         });

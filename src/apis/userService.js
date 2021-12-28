@@ -16,6 +16,10 @@ class UserService {
     updateUserInfo (userId, info) {
         return axios.post('/update_user_info', { userId, info });
     }
+
+    getFollowedUserInfo (userListStr) {
+        return axios.get(`/get_followed_user_info?userListStr=${userListStr}`);
+    }
 }
 
 export default new UserService();
