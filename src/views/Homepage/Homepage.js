@@ -5,36 +5,16 @@ import {
     useHistory,
     Redirect
 } from 'react-router-dom';
-// import {
-//     catagoryInfo
-// } from '../../actions/informationActions';
-// import { catagoryInfoStore } from '../../store/informationStore';
-// import articleService from '../../apis/articleService';
 import Header from '../../components/Header/header';
 import Navigator from '../../components/Navigator/Navigator';
 import PersonalInformation from '../../components/PersonalInformation/PersonalInformation';
 import EditPosting from '../../components/EditPosting/EditPosting';
 import BrowsePosting from '../../components/BrowsePosting/BrowsePosting';
 import './Homepage.scss';
-// import { useEffect } from 'react/cjs/react.development';
-// import { message } from 'antd';
 
 const HomePage = (props) => {
     const { path, url, params } = useRouteMatch();
     const history = useHistory();
-
-    // useEffect(() => {
-    //     articleService.getAllCatagory().then((res) => {
-    //         if (res.data.code === 200) {
-    //             const catagoryList = res.data.data;
-    //             catagoryInfoStore.dispatch(catagoryInfo(catagoryList));
-    //         } else {
-    //             message.warning('获取分类信息失败');
-    //         }
-    //     }).catch(() => {
-    //         message.warning('获取分类信息失败');
-    //     });
-    // }, []);
 
     function handleMenuItemClicked (index) {
         if (index === 1) {
@@ -71,7 +51,7 @@ const HomePage = (props) => {
 
                         <Route path={`${path}/Write-Article`}>
                             <div className='homepage-contentContainer'>
-                                <EditPosting></EditPosting>
+                                <EditPosting handleArticlePosted={() => handleMenuItemClicked(3)}></EditPosting>
                             </div>
                         </Route>
 

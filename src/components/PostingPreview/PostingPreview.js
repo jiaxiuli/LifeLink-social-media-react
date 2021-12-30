@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { LikeTwoTone, HeartTwoTone } from '@ant-design/icons';
 import userService from '../../apis/userService';
 import articleService from '../../apis/articleService';
@@ -42,6 +42,10 @@ const PostingPreview = (props) => {
         }
     }, [props, userInfo]);
 
+    useLayoutEffect(() => {
+
+    }, []);
+
     function handleLikeArticle () {
         const articleId = articleInfo.id;
         const curLikes = likeAndCollect.likes;
@@ -68,7 +72,10 @@ const PostingPreview = (props) => {
                             ? `${AuthorInfo?.firstname || ''} ${AuthorInfo?.lastname || ''}`
                             : 'unknown user'
                     }</p>
-                    <p className='create-time'>{articleInfo?.create_time || ''}</p>
+                    <p className='create-time'>
+                        {articleInfo?.create_time
+                            .substring(0, articleInfo?.create_time.length - 10) || ''}
+                    </p>
                 </div>
                 <div className='posting-preview-header-likes'>
                     <div className='icon-container'>
@@ -87,15 +94,14 @@ const PostingPreview = (props) => {
                 {articleInfo?.title || ''}
             </div>
             <div className='posting-preview-catagory'>
-                <div className='catagory'>{articleInfo?.catagory
+                <div className='catagory' title='分类'>{articleInfo?.catagory
                     ? `关于${(catagory?.find((item) => item.id === parseInt(articleInfo.catagory)))?.catagory_name || '无分类'}`
                     : '无分类'}</div>
                 <div className='tags'>
                     {
                         JSON.parse(articleInfo?.tags).map((item, index) => {
-                            const i = Math.floor(Math.random() * 10);
-                            return (<div className='tag' key={index} style={{ backgroundColor: colorList[i] }}>
-                                <span className='tag-text'>{item}</span>
+                            return (<div className='tag' key={index} style={{ backgroundColor: colorList[index] }}>
+                                <span className='tag-text' title={item}>{item}</span>
                             </div>);
                         })
                     }

@@ -6,7 +6,7 @@ import { Input, Button, Form, Select, message, Upload, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import './EditPosting.scss';
 
-const EditPosting = () => {
+const EditPosting = (props) => {
     const { TextArea } = Input;
     const { Option } = Select;
     const { Search } = Input;
@@ -132,6 +132,7 @@ const EditPosting = () => {
                 articleService.postAnArticle(request).then((res) => {
                     if (res.data.code === 200) {
                         message.success('发布成功');
+                        props.handleArticlePosted();
                     } else {
                         message.error('发布失败 请重试');
                     }

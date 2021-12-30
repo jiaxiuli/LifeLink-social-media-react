@@ -9,7 +9,7 @@ import {
 import './Navigator.scss';
 
 const Navigator = (props) => {
-    const paths = ['Personal-Information', 'Post-Something'];
+    const paths = ['Personal-Information', 'Write-Article', 'Articles'];
 
     const urlHash = window.location.hash.split('/');
     const path = urlHash[urlHash.length - 1];
