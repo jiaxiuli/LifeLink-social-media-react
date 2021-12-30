@@ -43,6 +43,10 @@ const BrowsePosting = () => {
     }, []);
 
     useEffect(() => {
+        requestArticleListByUserList();
+    }, [state.userInfo, state.followedUserInfo]);
+
+    function requestArticleListByUserList () {
         // 获取关注列表
         if (state.userInfo) {
             let followListStr = state.userInfo.follow;
@@ -62,7 +66,7 @@ const BrowsePosting = () => {
                 });
             }
         }
-    }, [state.userInfo, state.followedUserInfo]);
+    }
     return (
         <div className='browse-posting-main'>
             <div className='browse-posting-header-bar'>

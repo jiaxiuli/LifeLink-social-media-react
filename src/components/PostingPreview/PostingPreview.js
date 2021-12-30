@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { LikeTwoTone, HeartTwoTone } from '@ant-design/icons';
 import userService from '../../apis/userService';
+import articleService from '../../apis/articleService';
 import { DEFAULT_PHOTO_URL } from '../../static/defaultProfilePhoto';
 import './PostingPreview.scss';
 import { useState } from 'react/cjs/react.development';
@@ -10,10 +11,12 @@ import { message } from 'antd';
 const PostingPreview = (props) => {
     const [AuthorInfo, setAuthorInfo] = useState(null);
     const [profilePhoto, setProfilePhoto] = useState(DEFAULT_PHOTO_URL);
-
     const { userInfo, articleInfo, catagory } = props;
     const colorList = ['#19CAAD', '#D6D5B7', '#8CC7B5', '#D1BA74', '#A0EEE1', '#E6CEAC', '#BEE7E9', '#ECAD9E', '#BEEDC7', '#F4606C'];
-    console.log(articleInfo);
+    const [likeAndCollect, setLikeAndCollect] = useState({
+        likes: articleInfo.likes,
+        collects: articleInfo.collects
+    });
 
     useEffect(() => {
         if (props && articleInfo && userInfo) {
@@ -38,6 +41,20 @@ const PostingPreview = (props) => {
             }
         }
     }, [props, userInfo]);
+
+    function handleLikeArticle () {
+        const articleId = articleInfo.id;
+        const curLikes = likeAndCollect.likes;
+        articleService.updateArticleInfo(articleId, { likes: curLikes + 1 })
+            .then((res) => {
+                if (res.data.code === 200) {
+                    setLikeAndCollect((prev) => {
+                        prev.likes += 1;
+                        return { ...prev };
+                    });
+                }
+            });
+    }
     return (
         <div className='posting-preview-main-container'>
             <div className='posting-preview-header'>
@@ -56,12 +73,12 @@ const PostingPreview = (props) => {
                 <div className='posting-preview-header-likes'>
                     <div className='icon-container'>
                         <div className='likes' title='点赞数'>
-                            <LikeTwoTone style={{ fontSize: 18 }}/>
-                            <div className='icon-text'>500</div>
+                            <LikeTwoTone style={{ fontSize: 18 }} onClick={handleLikeArticle}/>
+                            <div className='icon-text'>{likeAndCollect?.likes?.toString() || 0}</div>
                         </div>
                         <div className='likes' title='收藏数'>
                             <HeartTwoTone style={{ fontSize: 18 }}/>
-                            <div className='icon-text'>50</div>
+                            <div className='icon-text'>{likeAndCollect?.collects?.toString() || 0}</div>
                         </div>
                     </div>
                 </div>

@@ -12,6 +12,10 @@ class ArticleService {
     getArticlesFromUserList (userList) {
         return axios.post('/get_articles_from_userList', { userList });
     }
+
+    updateArticleInfo (articleId, params) {
+        return axios.post('/update_article_info', { articleId, params });
+    }
 }
 
 export default new ArticleService();
