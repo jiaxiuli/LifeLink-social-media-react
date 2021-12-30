@@ -1,21 +1,24 @@
+/* eslint-disable no-debugger */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { message } from 'antd';
-import {
-    followedUserInfoStore,
-    userInfoStore
-} from '../../store/informationStore';
+import { DEFAULT_PHOTO_URL } from '../../static/defaultProfilePhoto';
+import infoStore from '../../store/informationStore';
 import { useHistory } from 'react-router-dom';
 import loginService from '../../apis/loginService';
 import userService from '../../apis/userService';
+import articleService from '../../apis/articleService';
 import {
-    userInfoAction
+    userInfoAction,
+    followedUserInfoAction,
+    catagoryInfoAction
 } from '../../actions/informationActions';
 import './header.scss';
 
 const Header = (props) => {
     const history = useHistory();
     const [userInfo, setUserInfo] = useState(null);
-    const [proPhoto, setProPhoto] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdTIgJFIUTtvW7R0KJeoB8L5jMgc6ePh5zkH2eJODnNxtq3pDKWEcjPbAWulFIuGMlb8I&usqp=CAU');
+    const [proPhoto, setProPhoto] = useState(DEFAULT_PHOTO_URL);
     useEffect(() => {
         if (userInfo) {
             userService.getProfilePhoto(userInfo.pic_id).then((res) => {
@@ -46,7 +49,7 @@ const Header = (props) => {
         }).then((res) => {
             const userInfo = res.data.data;
             // 向redux存入user信息
-            userInfoStore.dispatch(userInfoAction(userInfo));
+            infoStore.dispatch(userInfoAction(userInfo));
             return new Promise((resolve, reject) => {
                 userService.getFollowedUserInfo(userInfo.follow).then((res) => {
                     if (res.data.code === 200) resolve(res);
@@ -62,7 +65,7 @@ const Header = (props) => {
             }
         }).then((res) => {
             // 向redux存入关注列表信息
-            followedUserInfoStore.dispatch(userInfoAction(res.data.data));
+            infoStore.dispatch(followedUserInfoAction(res.data.data));
         }, (err) => {
             if (err.message === 'not logined') {
                 throw new Error('not logined');
@@ -72,9 +75,18 @@ const Header = (props) => {
         }).catch(() => {
             history.push('/login');
         });
-        const cancelSub = userInfoStore.subscribe(() => {
-            const infoFromRedux = userInfoStore.getState();
-            setUserInfo(infoFromRedux);
+        articleService.getAllCatagory().then((res) => {
+            if (res.data.code === 200) {
+                infoStore.dispatch(catagoryInfoAction(res.data.data));
+            } else {
+                message.warning('获取分类信息失败');
+            }
+        }).catch(() => {
+            message.warning('获取分类信息失败');
+        });
+        const cancelSub = infoStore.subscribe(() => {
+            const infoFromRedux = infoStore.getState();
+            setUserInfo(infoFromRedux.userInfo);
         });
         return () => {
             cancelSub();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import $ from 'jquery';
-import { userInfoStore } from '../../store/informationStore';
+import infoStore from '../../store/informationStore';
 import articleService from '../../apis/articleService';
 import { Input, Button, Form, Select, message, Upload, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -29,32 +29,22 @@ const EditPosting = () => {
     );
     // 获取用户信息
     useEffect(() => {
-        const obj = userInfoStore.getState();
-        setInfo(() => {
-            return { ...obj };
+        const reduxInfo = infoStore.getState();
+        setCatagory(() => [...reduxInfo.catagoryInfo]);
+        setInfo(() => ({ ...reduxInfo.userInfo }));
+        const cancelSub = infoStore.subscribe(() => {
+            setCatagory(() => [...reduxInfo.catagoryInfo]);
+            setInfo(() => ({ ...reduxInfo.userInfo }));
         });
-        const cancelSub = userInfoStore.subscribe(() => {
-            const obj = userInfoStore.getState();
-            setInfo(() => {
-                return { ...obj };
-            });
+        form.setFieldsValue({
+            catagory: '请选择分类'
         });
+        $('.edit-Area-input-title').trigger('focus');
         return () => {
             cancelSub();
             setInfo(() => null);
+            setCatagory(() => null);
         };
-    }, []);
-    useEffect(() => {
-        articleService.getAllCatagory().then((res) => {
-            if (res.data.code === 200) {
-                const catagoryList = res.data.data;
-                setCatagory(catagoryList);
-                form.setFieldsValue({
-                    catagory: '请选择分类'
-                });
-            }
-        });
-        $('.edit-Area-input-title').trigger('focus');
     }, []);
 
     function handleTagInput (event) {

@@ -1,5 +1,6 @@
 import { createStore } from 'redux';
-import { userInfoReducer, followedUserInfoReducer } from '../reducers/informationReducer';
+import infoReducer from '../reducers/informationReducer';
 
-export const userInfoStore = createStore(userInfoReducer);
-export const followedUserInfoStore = createStore(followedUserInfoReducer);
+const infoStore = createStore(infoReducer);
+
+export default infoStore;

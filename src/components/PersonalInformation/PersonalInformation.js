@@ -1,7 +1,8 @@
 import React from 'react';
 import InformationItem from '../InformationItem/InformationItem';
-import { userInfoStore } from '../../store/informationStore';
+import infoStore from '../../store/informationStore';
 import { Upload, message, Spin, Button } from 'antd';
+import { DEFAULT_PHOTO_URL } from '../../static/defaultProfilePhoto';
 import {
     userInfoAction
 } from '../../actions/informationActions';
@@ -19,7 +20,8 @@ const PersonalInformation = () => {
     const [loginInfoLocked, setLoginInfoLocked] = useState(true);
 
     function initPageData () {
-        const obj = userInfoStore.getState();
+        const reduxInfo = infoStore.getState();
+        const obj = reduxInfo.userInfo;
         setInfo(() => {
             return { ...obj };
         });
@@ -30,7 +32,7 @@ const PersonalInformation = () => {
 
     useEffect(() => {
         initPageData();
-        const cancelSub = userInfoStore.subscribe(() => {
+        const cancelSub = infoStore.subscribe(() => {
             initPageData();
         });
         return () => {
@@ -142,7 +144,7 @@ const PersonalInformation = () => {
                 }
             }).then((user) => {
                 // 重新请求到用户信息后 更新redux
-                userInfoStore.dispatch(userInfoAction(user));
+                infoStore.dispatch(userInfoAction(user));
             }).catch(() => {
                 message.error('上传失败');
             });
@@ -152,7 +154,7 @@ const PersonalInformation = () => {
     function getUserProfilePhoto () {
         if (info) {
             userService.getProfilePhoto(info.pic_id).then((res) => {
-                const pic = res.data.data.pic || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdTIgJFIUTtvW7R0KJeoB8L5jMgc6ePh5zkH2eJODnNxtq3pDKWEcjPbAWulFIuGMlb8I&usqp=CAU';
+                const pic = res.data.data.pic || DEFAULT_PHOTO_URL;
                 const photoContainer = document.querySelector('.photo');
                 if (photoContainer) {
                     photoContainer.style.backgroundImage = `url(${pic})`;
@@ -217,7 +219,7 @@ const PersonalInformation = () => {
             }).then((res) => {
                 message.success('更新信息成功');
                 // 向redux存入user信息
-                userInfoStore.dispatch(userInfoAction(res.data.data));
+                infoStore.dispatch(userInfoAction(res.data.data));
             }).catch(() => {
                 message.error('更新失败');
             });

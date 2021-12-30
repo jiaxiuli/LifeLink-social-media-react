@@ -1,10 +1,8 @@
+/* eslint-disable no-debugger */
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import { useState, useEffect } from 'react/cjs/react.development';
-import {
-    userInfoStore,
-    followedUserInfoStore
-} from '../../store/informationStore';
+import infoStore from '../../store/informationStore';
 import PostingPreview from '../PostingPreview/PostingPreview';
 import articleService from '../../apis/articleService';
 import { message, Empty, Select, Input } from 'antd';
@@ -14,38 +12,36 @@ const BrowsePosting = () => {
     const [state, setState] = useState({
         userInfo: {},
         articleList: [],
-        followedUserInfo: []
+        followedUserInfo: [],
+        catagory: []
     });
     const { Search } = Input;
-    // 获取用户信息和关注者信息
-    useEffect(() => {
-        const user = userInfoStore.getState();
-        const followed = followedUserInfoStore.getState();
+
+    function initPageData () {
+        const reduxInfo = infoStore.getState();
+        const user = reduxInfo.userInfo;
+        const followed = reduxInfo.followedUserInfo;
+        const catagory = reduxInfo.catagoryInfo;
+
         setState((prev) => {
             prev.userInfo = user;
             prev.followedUserInfo = followed;
+            prev.catagory = catagory;
             return { ...prev };
         });
-        const canceluserInfoSub = userInfoStore.subscribe(() => {
-            const obj = userInfoStore.getState();
-            setState((prev) => {
-                prev.userInfo = obj;
-                return { ...prev };
-            });
-        });
-        const cancelfollowedUserInfoSub = followedUserInfoStore.subscribe(() => {
-            const obj = followedUserInfoStore.getState();
-            setState((prev) => {
-                prev.followedUserInfo = obj;
-                return { ...prev };
-            });
+    }
+
+    // 获取用户信息和关注者信息
+    useEffect(() => {
+        initPageData();
+        const cancelSub = infoStore.subscribe(() => {
+            initPageData();
         });
         return () => {
-            canceluserInfoSub();
-            cancelfollowedUserInfoSub();
-            // setState(() => null);
+            cancelSub();
         };
     }, []);
+
     useEffect(() => {
         // 获取关注列表
         if (state.userInfo) {
@@ -80,14 +76,17 @@ const BrowsePosting = () => {
                     ? (<div className='browse-posting-content'>
                         <div className='browse-posting-content-preview'>
                             {
-                                state.articleList.map((item, index) => (
-                                    <PostingPreview
-                                        key={index}
-                                        articleInfo={item}
-                                        followedUserInfo={state.followedUserInfo}
-                                        userInfo={state.userInfo}
-                                    >
-                                    </PostingPreview>
+                                state.articleList.reverse().map((item, index) => (
+                                    item
+                                        ? <PostingPreview
+                                            key={index}
+                                            articleInfo={item}
+                                            followedUserInfo={state.followedUserInfo}
+                                            userInfo={state.userInfo}
+                                            catagory={state.catagory}
+                                        >
+                                        </PostingPreview>
+                                        : null
                                 ))
                             }
                         </div>

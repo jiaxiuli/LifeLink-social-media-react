@@ -1,23 +1,23 @@
-const userInfo = {};
-const followedUserInfo = [];
+const defaultData = {
+    userInfo: {},
+    followedUserInfo: [],
+    catagoryInfo: []
+};
 
-export function userInfoReducer (preState = userInfo, action) {
+export default function infoReducer (preState = defaultData, action) {
     const { type, data } = action;
-
     switch (type) {
-    case 'update':
-        return data;
-    default:
+    case 'update_userInfo':
+        preState.userInfo = { ...data };
         return preState;
-    }
-}
 
-export function followedUserInfoReducer (preState = followedUserInfo, action) {
-    const { type, data } = action;
+    case 'update_followedUserInfo':
+        preState.followedUserInfo = [...data];
+        return preState;
 
-    switch (type) {
-    case 'update':
-        return data;
+    case 'update_catagoryInfo':
+        preState.catagoryInfo = [...data];
+        return preState;
     default:
         return preState;
     }
