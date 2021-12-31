@@ -1,14 +1,23 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useLayoutEffect } from 'react';
-import { LikeTwoTone, HeartTwoTone } from '@ant-design/icons';
+import $ from 'jquery';
+import { LikeTwoTone, HeartTwoTone, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import userService from '../../apis/userService';
 import articleService from '../../apis/articleService';
 import { DEFAULT_PHOTO_URL } from '../../static/defaultProfilePhoto';
 import './PostingPreview.scss';
 import { useState } from 'react/cjs/react.development';
-import { message } from 'antd';
+import { message, Image, Popover } from 'antd';
 
 const PostingPreview = (props) => {
+    const [isScrollBtnShow, setIsScrollBtnShow] = useState({
+        picScroll: false,
+        tagScroll: false
+    });
+    const [scrollOffset, setScrollOffset] = useState({
+        picScroll: 0,
+        tagScroll: 0
+    });
     const [AuthorInfo, setAuthorInfo] = useState(null);
     const [profilePhoto, setProfilePhoto] = useState(DEFAULT_PHOTO_URL);
     const { userInfo, articleInfo, catagory } = props;
@@ -59,13 +68,86 @@ const PostingPreview = (props) => {
                 }
             });
     }
+    let timer;
+    let left = 0;
+    function handlePictureScroll (type) {
+        const container = $('.posting-preview-picture-container')[props.index];
+        const scroller = $('.posting-preview-picture-scroller')[props.index];
+        const containerWidth = $(container).width();
+        const scrollerWidth = $(scroller).width();
+        const diff = scrollerWidth - containerWidth;
+        if (diff > 0) {
+            left = scrollOffset.picScroll;
+            if (type === 'right') {
+                timer = setInterval(() => {
+                    if (left > -diff) {
+                        left -= 2;
+                        $(scroller).css('transform', `translateX(${left}px)`);
+                    }
+                }, 16);
+            }
+            if (type === 'left') {
+                timer = setInterval(() => {
+                    if (left < 0) {
+                        left += 2;
+                        $(scroller).css('transform', `translateX(${left}px)`);
+                    }
+                }, 16);
+            }
+        }
+    }
+    function handlePictureScrollStop () {
+        clearInterval(timer);
+        setScrollOffset((prev) => {
+            prev.picScroll = left;
+            return { ...prev };
+        });
+    }
+
+    function handleMouseEnterPicContainer () {
+        const container = $('.posting-preview-picture-container')[props.index];
+        const scroller = $('.posting-preview-picture-scroller')[props.index];
+        const containerWidth = $(container).width();
+        const scrollerWidth = $(scroller).width();
+        const diff = scrollerWidth - containerWidth;
+        if (diff > 0) {
+            setIsScrollBtnShow((prev) => {
+                prev.picScroll = true;
+                return { ...prev };
+            });
+        }
+    }
+
+    function handleMouseLeavePicContainer () {
+        setIsScrollBtnShow((prev) => {
+            prev.picScroll = false;
+            return { ...prev };
+        });
+    }
     return (
         <div className='posting-preview-main-container'>
             <div className='posting-preview-header'>
-                <div className='posting-preview-header-photo'
-                    style={{
-                        backgroundImage: `url(${profilePhoto || DEFAULT_PHOTO_URL})`
-                    }}></div>
+                <Popover
+                    trigger='hover'
+                    placement='leftTop'
+                    arrowPointAtCenter
+                    autoAdjustOverflow
+                    content={() => (
+                        <div className='photo-popover-container'>
+                            <div className='popover-photo' style={{
+                                backgroundImage: `url(${profilePhoto || DEFAULT_PHOTO_URL})`
+                            }}>
+                            </div>
+                            <div className='popover-slogan'>{`-"${AuthorInfo.slogan}"`}</div>
+                        </div>
+                    )}
+                >
+                    <div className='posting-preview-header-photo'
+                        style={{
+                            backgroundImage: `url(${profilePhoto || DEFAULT_PHOTO_URL})`
+                        }}>
+                    </div>
+                </Popover>
                 <div className='posting-preview-header-username'>
                     <p className='user-name'>{
                         AuthorInfo?.firstname || AuthorInfo?.lastname
@@ -110,15 +192,31 @@ const PostingPreview = (props) => {
             <div className='posting-preview-content'>
                 {articleInfo?.content || ''}
             </div>
-            <div className='posting-preview-picture-conainer'>
+            <div className='posting-preview-picture-container'
+                onMouseEnter={handleMouseEnterPicContainer}
+                onMouseLeave={handleMouseLeavePicContainer}
+            >
+                <div className='picture-scroll-button'
+                    style={{ right: '10px', display: isScrollBtnShow.picScroll ? 'block' : 'none' }}
+                    onMouseDown={() => handlePictureScroll('right')}
+                    onMouseUp={handlePictureScrollStop}
+                >
+                    <RightOutlined />
+                </div>
+                <div className='picture-scroll-button'
+                    style={{ left: '10px', display: isScrollBtnShow.picScroll ? 'block' : 'none' }}
+                    onMouseDown={() => handlePictureScroll('left')}
+                    onMouseUp={handlePictureScrollStop}
+                >
+                    <LeftOutlined />
+                </div>
                 <div className='posting-preview-picture-scroller'>
                     { articleInfo
                         ? JSON.parse(articleInfo.pictures).map((item, index) => (
-                            <div className='posting-preview-picture'
+                            <Image
                                 key={index}
-                                style={{
-                                    backgroundImage: `url(${item.thumbUrl})`
-                                }}></div>
+                                className='posting-preview-picture'
+                                src={item.thumbUrl}/>
                         ))
                         : null
                     }

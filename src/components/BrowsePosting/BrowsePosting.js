@@ -84,6 +84,7 @@ const BrowsePosting = () => {
                                     item
                                         ? <PostingPreview
                                             key={index}
+                                            index={index}
                                             articleInfo={item}
                                             followedUserInfo={state.followedUserInfo}
                                             userInfo={state.userInfo}
