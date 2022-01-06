@@ -9,8 +9,8 @@ class ArticleService {
         return axios.post('/post_an_article', { article });
     }
 
-    getArticlesFromUserList (userList) {
-        return axios.post('/get_articles_from_userList', { userList });
+    getArticlesFromUserList (userList, lastArticleId) {
+        return axios.post('/get_articles_from_userList', { userList, lastArticleId });
     }
 
     updateArticleInfo (articleId, params) {

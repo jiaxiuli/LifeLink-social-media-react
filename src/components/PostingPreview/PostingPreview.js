@@ -205,8 +205,7 @@ const PostingPreview = (props) => {
                             : 'unknown user'
                     }</p>
                     <p className='create-time'>
-                        {articleInfo?.create_time
-                            .substring(0, articleInfo?.create_time.length - 10) || ''}
+                        {articleInfo?.create_time?.substring(0, articleInfo?.create_time.length - 10) || ''}
                     </p>
                 </div>
                 <div className='posting-preview-header-likes'>

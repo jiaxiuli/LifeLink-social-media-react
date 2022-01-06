@@ -15,7 +15,7 @@ import infoStore from '../../store/informationStore';
 import userService from '../../apis/userService';
 import PostingPreview from '../PostingPreview/PostingPreview';
 import articleService from '../../apis/articleService';
-import { message, Empty, Select, Input, Divider, Avatar, Spin, Image } from 'antd';
+import { message, Empty, Select, Input, Divider, Avatar, Spin, Image, Button } from 'antd';
 import './BrowsePosting.scss';
 
 const BrowsePosting = () => {
@@ -28,6 +28,7 @@ const BrowsePosting = () => {
     const [curArticleIndex, setCurArticleIndex] = useState(-1);
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState([]);
+    const [isGetMoreArticleLoading, setIsGetMoreArticleLoading] = useState(false);
     const [picList, setPicList] = useState([]);
     const { Search } = Input;
     const { TextArea } = Input;
@@ -57,13 +58,16 @@ const BrowsePosting = () => {
     }, []);
 
     useEffect(() => {
-        if (state.userInfo) {
-            requestArticleListByUserList();
-        }
         if (state.followedUserInfo.length && state.userInfo) {
+            requestArticleListByUserList();
             requestFollowedUserPhoto();
         }
     }, [state.userInfo, state.followedUserInfo]);
+
+    function getMoreArticle () {
+        setIsGetMoreArticleLoading(true);
+        requestArticleListByUserList();
+    }
 
     function requestFollowedUserPhoto () {
         // 获取关注者头像
@@ -95,15 +99,25 @@ const BrowsePosting = () => {
         let followListStr = state.userInfo.follow;
         if (followListStr) {
             let followList = JSON.parse(followListStr);
-            followList.unshift(state.userInfo.id);
+            if (!followList.includes((item) => item.id === state.userInfo.id)) {
+                followList.unshift(state.userInfo.id);
+            }
             followListStr = JSON.stringify(followList);
+            let lastArticleId = -1;
+            if (state.articleList.length) {
+                lastArticleId = state.articleList[state.articleList.length - 1].id;
+            }
+            console.log(lastArticleId);
             // 获取文章列表
-            articleService.getArticlesFromUserList(followListStr).then((res) => {
+            articleService.getArticlesFromUserList(followListStr, lastArticleId).then((res) => {
                 if (res.data.code === 200) {
                     setState((prev) => {
-                        prev.articleList = res.data.data;
+                        // 去重
+                        const result = res.data.data.filter((item) => !prev.articleList.find((art) => art.id === item.id));
+                        prev.articleList = prev.articleList.concat(result);
                         return { ...prev };
                     });
+                    setIsGetMoreArticleLoading(false);
                 }
             }, () => {
                 message.warning('请求数据失败 请重试');
@@ -113,7 +127,7 @@ const BrowsePosting = () => {
 
     function handlePreviewClicked (index) {
         setCurArticleIndex(index);
-        console.log(JSON.parse(state.articleList[index].pictures));
+        // console.log(JSON.parse(state.articleList[index].pictures));
         setPicList(() => [...JSON.parse(state.articleList[index].pictures)]);
     }
 
@@ -121,14 +135,26 @@ const BrowsePosting = () => {
         const res = state.followedUserInfo?.filter(
             (item) => JSON.parse(state?.articleList[curArticleIndex]?.likes).includes(item.id)
         );
-        return res;
+        const includeSelf = res.findIndex((item) => item.id === state.userInfo.id) !== -1;
+        const len = includeSelf ? res.length - 1 : res.length;
+        return {
+            list: res,
+            includeSelf,
+            len
+        };
     }
 
     function getFriendWhoCollectedArticle () {
         const res = state.followedUserInfo?.filter(
             (item) => JSON.parse(state?.articleList[curArticleIndex]?.collects).includes(item.id)
         );
-        return res;
+        const includeSelf = res.findIndex((item) => item.id === state.userInfo.id) !== -1;
+        const len = includeSelf ? res.length - 1 : res.length;
+        return {
+            list: res,
+            includeSelf,
+            len
+        };
     }
 
     function getArticleAuthor () {
@@ -281,6 +307,18 @@ const BrowsePosting = () => {
                                     transform: 'translate(-50%, -50%)'
                                 }}></Spin>
                     }
+                    <div style={{
+                        position: 'relative',
+                        width: 'fit-content',
+                        left: '50%',
+                        transform: 'translateX(-50%)'
+                    }}>
+                        {
+                            isGetMoreArticleLoading
+                                ? <Spin tip="Loading..."></Spin>
+                                : <Button onClick={getMoreArticle}>获取更多</Button>
+                        }
+                    </div>
                 </div>
                 <div className='browse-posting-content-text'>
                     {
@@ -372,7 +410,7 @@ const BrowsePosting = () => {
                                         </div>
                                         <div className='browse-posting-content-comments-likes-group'>
                                             {
-                                                getFriendWhoLikedArticle().length
+                                                getFriendWhoLikedArticle().len
 
                                                     ? (
                                                         <>
@@ -416,14 +454,15 @@ const BrowsePosting = () => {
                                                 fontWeight: '600'
                                             }}>
                                             {
-                                                getFriendWhoLikedArticle().length
-                                                    ? (`${getFriendWhoLikedArticle().length}位朋友觉得很赞`)
+                                                getFriendWhoLikedArticle().len
+                                                    ? (`${getFriendWhoLikedArticle().len}
+                                                        位朋友${getFriendWhoLikedArticle().includeSelf ? '和你' : ''}觉得很赞`)
                                                     : null
                                             }
                                         </div>
                                         <div className='browse-posting-content-comments-collects-group'>
                                             {
-                                                getFriendWhoCollectedArticle().length
+                                                getFriendWhoCollectedArticle().len
                                                     ? (
                                                         <>
                                                             <Avatar.Group
@@ -465,8 +504,9 @@ const BrowsePosting = () => {
                                                 fontWeight: '600'
                                             }}>
                                             {
-                                                getFriendWhoCollectedArticle().length
-                                                    ? (`${getFriendWhoCollectedArticle().length}位朋友已收藏该文章`)
+                                                getFriendWhoCollectedArticle().len
+                                                    ? (`${getFriendWhoCollectedArticle().len}
+                                                    位朋友${getFriendWhoCollectedArticle().includeSelf ? '和你' : ''}已收藏该文章`)
                                                     : null
                                             }
                                         </div>
