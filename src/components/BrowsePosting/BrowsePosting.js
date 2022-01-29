@@ -1,5 +1,6 @@
 /* eslint-disable no-debugger */
 import React from 'react';
+import $ from 'jquery';
 import { useState, useEffect } from 'react/cjs/react.development';
 import {
     LikeOutlined,
@@ -28,6 +29,7 @@ const BrowsePosting = () => {
     const [curArticleIndex, setCurArticleIndex] = useState(-1);
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState([]);
+    const [isListFinal, setIsListFinal] = useState(false);
     const [isGetMoreArticleLoading, setIsGetMoreArticleLoading] = useState(false);
     const [picList, setPicList] = useState([]);
     const { Search } = Input;
@@ -45,7 +47,6 @@ const BrowsePosting = () => {
             return { ...prev };
         });
     }
-
     // 获取用户信息和关注者信息
     useEffect(() => {
         initPageData();
@@ -58,11 +59,29 @@ const BrowsePosting = () => {
     }, []);
 
     useEffect(() => {
+        // 监听滚动条是否到达底部
+        $('.browse-posting-content-preview')[0].addEventListener('scroll', handleListenScroller);
+        return () => {
+            $('.browse-posting-content-preview')[0].removeEventListener('scroll', handleListenScroller);
+        };
+    }, [state.articleList]);
+
+    useEffect(() => {
         if (state.followedUserInfo.length && state.userInfo) {
             requestArticleListByUserList();
             requestFollowedUserPhoto();
         }
     }, [state.userInfo, state.followedUserInfo]);
+
+    function handleListenScroller () {
+        if (!isListFinal) {
+            const listArea = $('.browse-posting-content-preview')[0];
+            const { scrollHeight, scrollTop, clientHeight } = listArea;
+            if (scrollHeight - scrollTop <= clientHeight) {
+                getMoreArticle();
+            }
+        }
+    }
 
     function getMoreArticle () {
         setIsGetMoreArticleLoading(true);
@@ -107,16 +126,16 @@ const BrowsePosting = () => {
             if (state.articleList.length) {
                 lastArticleId = state.articleList[state.articleList.length - 1].id;
             }
-            console.log(lastArticleId);
             // 获取文章列表
             articleService.getArticlesFromUserList(followListStr, lastArticleId).then((res) => {
                 if (res.data.code === 200) {
                     setState((prev) => {
                         // 去重
-                        const result = res.data.data.filter((item) => !prev.articleList.find((art) => art.id === item.id));
+                        const result = res.data.data.result.filter((item) => !prev.articleList.find((art) => art.id === item.id));
                         prev.articleList = prev.articleList.concat(result);
                         return { ...prev };
                     });
+                    setIsListFinal(res.data.data.isFinal);
                     setIsGetMoreArticleLoading(false);
                 }
             }, () => {
@@ -127,7 +146,6 @@ const BrowsePosting = () => {
 
     function handlePreviewClicked (index) {
         setCurArticleIndex(index);
-        // console.log(JSON.parse(state.articleList[index].pictures));
         setPicList(() => [...JSON.parse(state.articleList[index].pictures)]);
     }
 
@@ -314,9 +332,14 @@ const BrowsePosting = () => {
                         transform: 'translateX(-50%)'
                     }}>
                         {
-                            isGetMoreArticleLoading
-                                ? <Spin tip="Loading..."></Spin>
-                                : <Button onClick={getMoreArticle}>获取更多</Button>
+                            isListFinal
+                                ? <span style={{
+                                    fontSize: '12px',
+                                    color: '#5e5e5e'
+                                }}>- End -</span>
+                                : (isGetMoreArticleLoading
+                                    ? <Spin tip="Loading..."></Spin>
+                                    : <Button onClick={getMoreArticle}>获取更多</Button>)
                         }
                     </div>
                 </div>
