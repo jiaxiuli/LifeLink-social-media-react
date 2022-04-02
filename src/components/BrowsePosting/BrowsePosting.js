@@ -285,7 +285,7 @@ const BrowsePosting = () => {
     return (
         <div className='browse-posting-main'>
             <div className='browse-posting-header-bar'>
-                <span>筛选: </span>
+                {/* <span>筛选: </span> */}
                 <Select className='browse-posting-header-bar-select'>分类</Select>
                 <Select className='browse-posting-header-bar-select'>日期</Select>
                 <Search className='browse-posting-header-bar-search'></Search>
@@ -346,7 +346,11 @@ const BrowsePosting = () => {
                 <div className='browse-posting-content-text'>
                     {
                         curArticleIndex === -1
-                            ? <Empty description='暂无数据'></Empty>
+                            ? <Empty description='暂无数据' style={{
+                                position: 'relative',
+                                top: '50%',
+                                transform: 'translateY(-50%)'
+                            }}></Empty>
                             : (
                                 <>
                                     <div className='browse-posting-content-text-title'>
@@ -406,7 +410,7 @@ const BrowsePosting = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <Divider style={{ margin: '10px 0px 0px 0px' }}/>
+                                    <Divider style={{ margin: '0px' }}/>
                                     <TextArea
                                         bordered={false}
                                         readOnly

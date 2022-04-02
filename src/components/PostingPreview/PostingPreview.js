@@ -134,8 +134,8 @@ const PostingPreview = (props) => {
                                         AuthorInfo?.gender
                                             ? (
                                                 AuthorInfo?.gender === 'm'
-                                                    ? <ManOutlined style={{ fontSize: '14px', color: '#096dd9' }}/>
-                                                    : <WomanOutlined style={{ fontSize: '14px', color: '#f759ab' }}/>
+                                                    ? <ManOutlined style={{ color: '#096dd9' }}/>
+                                                    : <WomanOutlined style={{ color: '#f759ab' }}/>
                                             )
                                             : ' '
 
@@ -215,12 +215,12 @@ const PostingPreview = (props) => {
                                 props.isLiked
                                     ? <LikeTwoTone
                                         title='取消点赞'
-                                        style={{ fontSize: 18 }}
+                                        style={{ fontSize: 14 }}
                                         onClick={(ev) => props.handleToggleLikeArticle('dislike', props.index, ev)}
                                     />
                                     : <LikeOutlined
                                         title='点赞'
-                                        style={{ fontSize: 18 }}
+                                        style={{ fontSize: 14 }}
                                         onClick={(ev) => props.handleToggleLikeArticle('like', props.index, ev)}
                                     />
                             }
@@ -231,11 +231,11 @@ const PostingPreview = (props) => {
                                 props.isCollect
                                     ? <HeartTwoTone
                                         title='取消收藏'
-                                        style={{ fontSize: 18 }}
+                                        style={{ fontSize: 14 }}
                                         onClick={(ev) => props.handleToggleCollectArticle('uncollect', props.index, ev)}/>
                                     : <HeartOutlined
                                         title='收藏'
-                                        style={{ fontSize: 18 }}
+                                        style={{ fontSize: 14 }}
                                         onClick={(ev) => props.handleToggleCollectArticle('collect', props.index, ev)}/>
                             }
                             <div className='icon-text'>{JSON.parse(articleInfo?.collects)?.length || 0}</div>

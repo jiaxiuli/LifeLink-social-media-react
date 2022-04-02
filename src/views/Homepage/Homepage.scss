@@ -8,7 +8,7 @@
 
         .homepage-main-content-right {
             position: relative;
-            height: calc(100vh - 150px);
+            height: calc(100vh - 120px);
             width: calc(100vw - 12%);
             display: flex;
             overflow: hidden;
@@ -29,7 +29,7 @@
                 box-sizing: border-box;
                 max-height: 100%;
                 overflow: auto;
-                padding: 2%;
+                padding: 2% 0px;
                 flex-shrink: 0;
                 width: 100%;
                 animation-name: moveIn;

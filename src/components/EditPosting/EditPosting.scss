@@ -85,7 +85,7 @@
         padding: 1%;
         display: flex;
         flex-direction: column;
-        box-shadow:0px 0px 10px rgba(0, 0, 0, 0.562);
+        box-shadow:0px 0px 10px rgba(0, 0, 0, 0.2);
         border-radius: 10px;
         flex: 3;
         z-index: 10;
@@ -125,7 +125,7 @@
         overflow: auto;
         padding: 2%;
         height: 100%;
-        flex: 2;
+        flex: 1;
     }
 }
 
