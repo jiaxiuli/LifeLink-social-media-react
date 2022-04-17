@@ -2,6 +2,15 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+![image](https://github.com/jiaxiuli/LifeLink-social-media-react/blob/master/src/static/login.png)
+
+![image](https://github.com/jiaxiuli/LifeLink-social-media-react/blob/master/src/static/homepage.png)
+
+![image](https://github.com/jiaxiuli/LifeLink-social-media-react/blob/master/src/static/editposting.png)
+
+![image](https://github.com/jiaxiuli/LifeLink-social-media-react/blob/master/src/static/read.png)
+
+![image](https://github.com/jiaxiuli/LifeLink-social-media-react/blob/master/src/static/likes.png)
 ## Available Scripts
 
 In the project directory, you can run:
