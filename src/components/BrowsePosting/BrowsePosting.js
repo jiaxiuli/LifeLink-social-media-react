@@ -12,14 +12,19 @@ import {
     LikeFilled,
     HeartFilled
 } from '@ant-design/icons';
-import infoStore from '../../store/informationStore';
 import userService from '../../apis/userService';
 import PostingPreview from '../PostingPreview/PostingPreview';
 import articleService from '../../apis/articleService';
+import { useSelector } from 'react-redux';
 import { message, Empty, Select, Input, Divider, Avatar, Spin, Image, Button } from 'antd';
+import { cloneDeep } from 'lodash';
 import './BrowsePosting.scss';
 
 const BrowsePosting = () => {
+    const { userInfo } = useSelector(state => state.userInfo);
+    const catagory = useSelector(state => state.catagory.list);
+    const followList = useSelector(state => state.followList.list);
+
     const [state, setState] = useState({
         userInfo: {},
         articleList: [],
@@ -34,29 +39,17 @@ const BrowsePosting = () => {
     const [picList, setPicList] = useState([]);
     const { Search } = Input;
     const { TextArea } = Input;
-    function initPageData () {
-        const reduxInfo = infoStore.getState();
-        const user = reduxInfo.userInfo;
-        const followed = reduxInfo.followedUserInfo;
-        const catagory = reduxInfo.catagoryInfo;
 
-        setState((prev) => {
-            prev.userInfo = user;
-            prev.followedUserInfo = followed;
-            prev.catagory = catagory;
-            return { ...prev };
-        });
-    }
-    // 获取用户信息和关注者信息
     useEffect(() => {
-        initPageData();
-        const cancelSub = infoStore.subscribe(() => {
-            initPageData();
-        });
-        return () => {
-            cancelSub();
-        };
-    }, []);
+        if (userInfo && catagory && followList) {
+            setState((prev) => ({
+                ...prev,
+                userInfo: cloneDeep(userInfo),
+                followedUserInfo: cloneDeep(followList),
+                catagory
+            }));
+        }
+    }, [userInfo, catagory, followList]);
 
     useEffect(() => {
         // 监听滚动条是否到达底部

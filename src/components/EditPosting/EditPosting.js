@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import $ from 'jquery';
-import infoStore from '../../store/informationStore';
 import articleService from '../../apis/articleService';
 import { Input, Button, Form, Select, message, Upload, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import './EditPosting.scss';
 
 const EditPosting = (props) => {
+    const catagory = useSelector(state => state.catagory.list);
+    const info = useSelector(state => state.userInfo.userInfo);
     const { TextArea } = Input;
     const { Option } = Select;
     const { Search } = Input;
     const [form] = Form.useForm();
     const inputRef = React.useRef(null);
-    const [info, setInfo] = useState(null);
-    const [catagory, setCatagory] = useState([]);
     const [isSubmitBtnLoading, setIsSubmitBtnLoading] = useState(false);
     const [picState, setPicState] = useState({
         previewVisible: false,
@@ -29,22 +29,10 @@ const EditPosting = (props) => {
     );
     // 获取用户信息
     useEffect(() => {
-        const reduxInfo = infoStore.getState();
-        setCatagory(() => [...reduxInfo.catagoryInfo]);
-        setInfo(() => ({ ...reduxInfo.userInfo }));
-        const cancelSub = infoStore.subscribe(() => {
-            setCatagory(() => [...reduxInfo.catagoryInfo]);
-            setInfo(() => ({ ...reduxInfo.userInfo }));
-        });
         form.setFieldsValue({
             catagory: '请选择分类'
         });
         $('.edit-Area-input-title').trigger('focus');
-        return () => {
-            cancelSub();
-            setInfo(() => null);
-            setCatagory(() => null);
-        };
     }, []);
 
     function handleTagInput (event) {

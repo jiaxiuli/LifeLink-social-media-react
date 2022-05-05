@@ -1,46 +1,22 @@
 import React from 'react';
 import InformationItem from '../InformationItem/InformationItem';
-import infoStore from '../../store/informationStore';
 import { Upload, message, Spin, Button } from 'antd';
 import { DEFAULT_PHOTO_URL } from '../../static/defaultProfilePhoto';
-import {
-    userInfoAction
-} from '../../actions/informationActions';
 import { PlusOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import userService from '../../apis/userService';
 import './PersonalInformation.scss';
 import { useEffect, useState } from 'react/cjs/react.development';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { getCurrentUser } from '../../redux/slices/userInfoSlice';
+import { cloneDeep } from 'lodash';
 const PersonalInformation = () => {
-    const [info, setInfo] = useState(null);
+    const info = useSelector(state => state.userInfo.userInfo);
+    const dispatch = useDispatch();
     const [dataList, setDataList] = useState([]);
     const [photoBase64Str, setPhotoBase64Str] = useState('');
     const [isChangePhotoLoading, setIsChangePhotoLoading] = useState(false);
     const [compareInfo, setCompareInfo] = useState(null);
     const [loginInfoLocked, setLoginInfoLocked] = useState(true);
-
-    function initPageData () {
-        const reduxInfo = infoStore.getState();
-        const obj = reduxInfo.userInfo;
-        setInfo(() => {
-            return { ...obj };
-        });
-        setCompareInfo(() => {
-            return { ...obj };
-        });
-    }
-
-    useEffect(() => {
-        initPageData();
-        const cancelSub = infoStore.subscribe(() => {
-            initPageData();
-        });
-        return () => {
-            cancelSub();
-            setInfo(() => null);
-            setCompareInfo(() => null);
-        };
-    }, []);
 
     useEffect(() => {
         if (info) {
@@ -118,49 +94,41 @@ const PersonalInformation = () => {
                     value: info.address
                 }
             ];
+            setCompareInfo(cloneDeep(info));
             setDataList([basicInfo, contectInfo]);
             getUserProfilePhoto();
         }
     }, [info]);
 
-    useEffect(() => {
+    useEffect(async () => {
         if (photoBase64Str) {
-            userService.uploadProfilePhoto(photoBase64Str, info.id).then((res) => {
-                if (res.data.code === 200) {
-                    // 上传头像成功 后端此时已经成功存储了图片 和 更新了user表中的pic_id
-                    message.success('上传成功');
-                    return new Promise((resolve) => {
-                        // 前端的info并没有更新 所以需要重新请求用户信息
-                        userService.getUserInfoById(info.id).then((res) => {
-                            if (res.data.code === 200) {
-                                resolve(res.data.data);
-                            }
-                        }).catch(() => {
-                            message.warning('请重试');
-                        });
-                    });
-                } else {
-                    message.warning('上传失败');
+            try {
+                const uploadRes = await userService.uploadProfilePhoto(photoBase64Str, info.id);
+                if (uploadRes.data.code !== 200) {
+                    throw uploadRes.data.message;
                 }
-            }).then((user) => {
-                // 重新请求到用户信息后 更新redux
-                infoStore.dispatch(userInfoAction(user));
-            }).catch(() => {
-                message.error('上传失败');
-            });
+                const res = await dispatch(getCurrentUser(info.id));
+                if (res.meta.requestStatus === 'fulfilled') {
+                    message.success('上传成功');
+                } else {
+                    message.error('重新获取数据失败');
+                    throw res.meta.payload.error;
+                }
+            } catch (err) {
+                console.error(err);
+            }
         }
     }, [photoBase64Str]);
 
-    function getUserProfilePhoto () {
+    async function getUserProfilePhoto () {
         if (info) {
-            userService.getProfilePhoto(info.pic_id).then((res) => {
-                const pic = res.data.data.pic || DEFAULT_PHOTO_URL;
-                const photoContainer = document.querySelector('.photo');
-                if (photoContainer) {
-                    photoContainer.style.backgroundImage = `url(${pic})`;
-                    setIsChangePhotoLoading(false);
-                }
-            });
+            const res = await userService.getProfilePhoto(info.pic_id);
+            const pic = res.data.data.pic || DEFAULT_PHOTO_URL;
+            const photoContainer = document.querySelector('.photo');
+            if (photoContainer) {
+                photoContainer.style.backgroundImage = `url(${pic})`;
+                setIsChangePhotoLoading(false);
+            }
         }
     }
 
@@ -193,7 +161,7 @@ const PersonalInformation = () => {
         });
     }
 
-    function handleSubmitChangedInfo () {
+    async function handleSubmitChangedInfo () {
         const change = {};
         Object.keys(info).forEach((item) => {
             if (info[item] !== compareInfo[item]) {
@@ -203,26 +171,22 @@ const PersonalInformation = () => {
         if (Object.keys(change).length === 0) {
             message.warning('没有数据更改');
         } else {
-            userService.updateUserInfo(info.id, change).then((res) => {
-                if (res.data.code === 200) {
-                    return new Promise((resolve, reject) => {
-                        userService.getUserInfoById(info.id).then((res) => {
-                            if (res.data.code === 200) resolve(res);
-                            // eslint-disable-next-line prefer-promise-reject-errors
-                            else reject();
-                        });
-                    });
-                } else {
-                    message.warning('请刷新');
-                    throw new Error('更新失败');
+            try {
+                const updateRes = await userService.updateUserInfo(info.id, change);
+                if (updateRes.data.code !== 200) {
+                    message.error('更新失败');
+                    throw updateRes.data.message;
                 }
-            }).then((res) => {
-                message.success('更新信息成功');
-                // 向redux存入user信息
-                infoStore.dispatch(userInfoAction(res.data.data));
-            }).catch(() => {
-                message.error('更新失败');
-            });
+                const res = await dispatch(getCurrentUser(info.id));
+                if (res.meta.requestStatus === 'fulfilled') {
+                    message.success('更新信息成功');
+                } else {
+                    message.error('重新获取数据失败');
+                    throw res.meta.payload.error;
+                }
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 

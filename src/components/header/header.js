@@ -3,94 +3,51 @@
 import React, { useEffect, useState } from 'react';
 import { message } from 'antd';
 import { DEFAULT_PHOTO_URL } from '../../static/defaultProfilePhoto';
-import infoStore from '../../store/informationStore';
 import { useHistory } from 'react-router-dom';
 import loginService from '../../apis/loginService';
 import userService from '../../apis/userService';
-import articleService from '../../apis/articleService';
-import {
-    userInfoAction,
-    followedUserInfoAction,
-    catagoryInfoAction
-} from '../../actions/informationActions';
 import './header.scss';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { getCurrentUser } from '../../redux/slices/userInfoSlice';
+import { getFollowedUserInfo } from '../../redux/slices/followListSlice';
+import { getAllCatagory } from '../../redux/slices/catagorySlice';
 const Header = (props) => {
     const history = useHistory();
-    const [userInfo, setUserInfo] = useState(null);
+    const dispatch = useDispatch();
     const [proPhoto, setProPhoto] = useState(DEFAULT_PHOTO_URL);
-    useEffect(() => {
+
+    const userInfo = useSelector(state => state.userInfo.userInfo);
+
+    useEffect(async () => {
         if (userInfo) {
-            userService.getProfilePhoto(userInfo.pic_id).then((res) => {
+            try {
+                const res = await userService.getProfilePhoto(userInfo.pic_id);
                 if (res.data.code === 200) {
                     setProPhoto(res.data.data.pic);
+                } else {
+                    throw new Error('获取用户头像失败');
                 }
-            }).catch(() => {
-                message.warning('获取用户头像失败');
-            });
+                dispatch(getFollowedUserInfo(userInfo.follow));
+                dispatch(getAllCatagory());
+            } catch (err) {
+                console.error(err);
+            }
         }
     }, [userInfo]);
 
-    useEffect(() => {
-        const userId = props.userId;
-        loginService.checkLoginStatus(userId).then((res) => {
-            if (!res.data.data.loginStatus) {
+    useEffect(async () => {
+        try {
+            const userId = props.userId;
+            const { loginStatus } = (await loginService.checkLoginStatus(userId)).data.data;
+            if (!loginStatus) {
                 message.warning('登陆状态过期 请重新登陆');
                 throw new Error('not logined');
-            } else {
-                return new Promise((resolve, reject) => {
-                    userService.getUserInfoById(userId).then((res) => {
-                        if (res.data.code === 200) resolve(res);
-                        // eslint-disable-next-line prefer-promise-reject-errors
-                        else reject();
-                    });
-                });
             }
-        }).then((res) => {
-            const userInfo = res.data.data;
-            // 向redux存入user信息
-            infoStore.dispatch(userInfoAction(userInfo));
-            return new Promise((resolve, reject) => {
-                userService.getFollowedUserInfo(userInfo.follow).then((res) => {
-                    if (res.data.code === 200) resolve(res);
-                    // eslint-disable-next-line prefer-promise-reject-errors
-                    else reject();
-                });
-            });
-        }, (err) => {
-            if (err.message === 'not logined') {
-                throw new Error('not logined');
-            } else {
-                message.error('获取用户信息失败');
-            }
-        }).then((res) => {
-            // 向redux存入关注列表信息
-            infoStore.dispatch(followedUserInfoAction(res.data.data));
-        }, (err) => {
-            if (err.message === 'not logined') {
-                throw new Error('not logined');
-            } else {
-                message.error('获取关注列表失败');
-            }
-        }).catch(() => {
+            dispatch(getCurrentUser(userId));
+        } catch (err) {
+            console.error(err);
             history.push('/login');
-        });
-        articleService.getAllCatagory().then((res) => {
-            if (res.data.code === 200) {
-                infoStore.dispatch(catagoryInfoAction(res.data.data));
-            } else {
-                message.warning('获取分类信息失败');
-            }
-        }).catch(() => {
-            message.warning('获取分类信息失败');
-        });
-        const cancelSub = infoStore.subscribe(() => {
-            const infoFromRedux = infoStore.getState();
-            setUserInfo(infoFromRedux.userInfo);
-        });
-        return () => {
-            cancelSub();
-        };
+        }
     }, []);
 
     return (
